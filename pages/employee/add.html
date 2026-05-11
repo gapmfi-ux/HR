@@ -1,0 +1,422 @@
+<div class="employee-form-container">
+    <div class="form-header">
+        <h2>Add New Employee</h2>
+        <p>Fill in all required fields marked with <span class="required-mark">*</span></p>
+    </div>
+    
+    <!-- Form Tabs -->
+    <div class="form-tabs">
+        <button class="tab-btn active" data-tab="personal">
+            <i class="fas fa-user"></i>
+            <span>Personal Details</span>
+        </button>
+        <button class="tab-btn" data-tab="employment">
+            <i class="fas fa-briefcase"></i>
+            <span>Employment</span>
+        </button>
+        <button class="tab-btn" data-tab="education">
+            <i class="fas fa-graduation-cap"></i>
+            <span>Education</span>
+        </button>
+        <button class="tab-btn" data-tab="guarantor">
+            <i class="fas fa-handshake"></i>
+            <span>Guarantors</span>
+        </button>
+        <button class="tab-btn" data-tab="documents">
+            <i class="fas fa-paperclip"></i>
+            <span>Documents</span>
+        </button>
+    </div>
+    
+    <form id="employeeForm" onsubmit="return false;">
+        <!-- Tab 1: Personal Details -->
+        <div id="tab-personal" class="tab-pane active">
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-id-card"></i>
+                    Basic Information
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Employee Number</label>
+                        <input type="text" id="employeeNumber" readonly>
+                        <small class="form-text text-muted">Auto-generated</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Full Name</label>
+                        <input type="text" id="employeeName" required placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Sex</label>
+                        <select id="sex" required>
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Nationality</label>
+                        <input type="text" id="nationality" required placeholder="e.g., Ghanaian">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">ID Type</label>
+                        <select id="idType" required>
+                            <option value="">Select</option>
+                            <option value="National ID">National ID (Ghana Card)</option>
+                            <option value="Passport">Passport</option>
+                            <option value="Voter ID">Voter ID</option>
+                            <option value="Driver License">Driver License</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">ID Number</label>
+                        <input type="text" id="idNumber" required placeholder="Enter ID number">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Date of Birth</label>
+                        <input type="date" id="dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Place of Birth</label>
+                        <input type="text" id="placeOfBirth" required placeholder="City/Town">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Contact Number</label>
+                        <input type="tel" id="contactNumber" required placeholder="e.g., 024XXXXXXX">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-home"></i>
+                    Residential Information
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Residence / House Address</label>
+                        <input type="text" id="residence" placeholder="Street name, house number">
+                    </div>
+                    <div class="form-group">
+                        <label>Digital Address (GPS)</label>
+                        <input type="text" id="digitalAddress" placeholder="e.g., GA-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Significant Landmark</label>
+                        <input type="text" id="landmark" placeholder="Near ...">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Residence Type</label>
+                        <select id="residenceType">
+                            <option value="">Select</option>
+                            <option value="Owned">Owned</option>
+                            <option value="Rented">Rented</option>
+                            <option value="Family">Family</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-heart"></i>
+                    Family Information
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Marital Status</label>
+                        <select id="maritalStatus">
+                            <option value="">Select</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                            <option value="Widowed">Widowed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Spouse Name (if married)</label>
+                        <input type="text" id="spouseName" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Children</label>
+                        <input type="number" id="childrenCount" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Father's Name</label>
+                        <input type="text" id="fatherName" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Mother's Name</label>
+                        <input type="text" id="motherName" placeholder="Full name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Next of Kin</label>
+                        <input type="text" id="nextOfKin" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Kin Contact Number</label>
+                        <input type="tel" id="kinContact" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Kin Residence</label>
+                        <input type="text" id="kinResidence" placeholder="Address">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab 2: Employment Details -->
+        <div id="tab-employment" class="tab-pane">
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Appointment Information
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date of Appointment</label>
+                        <input type="date" id="dateOfAppointment">
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Assumption</label>
+                        <input type="date" id="assumptionDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Designation / Job Title</label>
+                        <input type="text" id="designation" required placeholder="e.g., Senior Software Engineer">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Department</label>
+                        <select id="department" required>
+                            <option value="">Select Department</option>
+                            <option value="Executive">Executive</option>
+                            <option value="Human Resources">Human Resources</option>
+                            <option value="Finance & Accounting">Finance & Accounting</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Sales & Marketing">Sales & Marketing</option>
+                            <option value="Operations">Operations</option>
+                            <option value="Customer Service">Customer Service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Employment Type</label>
+                        <select id="employmentType" required>
+                            <option value="">Select</option>
+                            <option value="Full-Time">Full-Time (Permanent)</option>
+                            <option value="Part-Time">Part-Time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Probation">Probation</option>
+                            <option value="Intern">Intern</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    Identification Numbers
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>SSNIT Number</label>
+                        <input type="text" id="ssnit" placeholder="e.g., SSNIT-XXX-XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>TIN Number (Tax ID)</label>
+                        <input type="text" id="tinNumber" placeholder="e.g., TIN-XXX-XXXX">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab 3: Education Details -->
+        <div id="tab-education" class="tab-pane">
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-school"></i>
+                    Secondary Education
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Institution Name</label>
+                        <input type="text" id="secondaryInstitution" placeholder="High School / Secondary School">
+                    </div>
+                    <div class="form-group">
+                        <label>Major / Programme</label>
+                        <input type="text" id="secondaryMajor" placeholder="e.g., General Science">
+                    </div>
+                    <div class="form-group">
+                        <label>Year of Completion</label>
+                        <input type="text" id="secondaryYear" placeholder="e.g., 2010">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-university"></i>
+                    Tertiary Education
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Institution Name</label>
+                        <input type="text" id="tertiaryInstitution" placeholder="University / College">
+                    </div>
+                    <div class="form-group">
+                        <label>Major / Programme</label>
+                        <input type="text" id="tertiaryMajor" placeholder="e.g., Computer Science">
+                    </div>
+                    <div class="form-group">
+                        <label>Year of Completion</label>
+                        <input type="text" id="tertiaryYear" placeholder="e.g., 2014">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-certificate"></i>
+                    Professional Education
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Institution / Body</label>
+                        <input type="text" id="professionalInstitution" placeholder="e.g., ICAG, CIM, PMI">
+                    </div>
+                    <div class="form-group">
+                        <label>Certification / Programme</label>
+                        <input type="text" id="professionalMajor" placeholder="e.g., Project Management">
+                    </div>
+                    <div class="form-group">
+                        <label>Year of Completion</label>
+                        <input type="text" id="professionalYear" placeholder="e.g., 2018">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab 4: Guarantor Details -->
+        <div id="tab-guarantor" class="tab-pane">
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-user-check"></i>
+                    Guarantor 1
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="guarantor1Name" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="guarantor1Contact" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="guarantor1Email" placeholder="email@example.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Residential / Postal Address</label>
+                    <input type="text" id="guarantor1Address" placeholder="Full address">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-user-check"></i>
+                    Guarantor 2
+                </h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="guarantor2Name" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="guarantor2Contact" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="guarantor2Email" placeholder="email@example.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Residential / Postal Address</label>
+                    <input type="text" id="guarantor2Address" placeholder="Full address">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab 5: Documents -->
+        <div id="tab-documents" class="tab-pane">
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-upload"></i>
+                    Upload Documents
+                </h3>
+                
+                <div class="document-upload-area" id="documentUploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & drop files here or click to browse</p>
+                    <small>Supported files: PDF, JPG, PNG, DOC (Max 5MB each)</small>
+                    <input type="file" id="documentFile" multiple style="display: none;">
+                </div>
+                
+                <div class="document-type-selector">
+                    <label>Document Type:</label>
+                    <select id="documentType">
+                        <option value="ID">National ID / Passport</option>
+                        <option value="Certificate">Certificate</option>
+                        <option value="Degree">Degree / Diploma</option>
+                        <option value="Professional">Professional Certificate</option>
+                        <option value="CV">CV / Resume</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <button type="button" class="btn btn-primary btn-sm" id="uploadDocumentBtn">
+                        <i class="fas fa-upload"></i> Upload
+                    </button>
+                </div>
+                
+                <div class="uploaded-documents-list" id="uploadedDocumentsList">
+                    <h4>Uploaded Documents</h4>
+                    <div class="empty-state-small" id="emptyDocuments">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No documents uploaded yet</p>
+                    </div>
+                    <div id="documentsContainer"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form Navigation Buttons -->
+        <div class="form-navigation">
+            <button type="button" class="btn btn-secondary" id="prevTabBtn" style="display: none;">
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button type="button" class="btn btn-primary" id="nextTabBtn">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+            <button type="button" class="btn btn-success" id="submitBtn" style="display: none;">
+                <i class="fas fa-save"></i> Save Employee
+            </button>
+        </div>
+    </form>
+</div>
