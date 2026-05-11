@@ -100,6 +100,7 @@ body {
     padding: 16px 12px;
 }
 
+/* Nav Section Styles */
 .nav-section {
     margin-bottom: 20px;
 }
@@ -116,10 +117,12 @@ body {
     justify-content: space-between;
     cursor: pointer;
     transition: color 0.2s;
+    border-radius: 6px;
 }
 
 .nav-section-title:hover {
     color: var(--gray-300);
+    background: var(--gray-700);
 }
 
 .nav-section-title i {
@@ -127,6 +130,7 @@ body {
     transition: transform 0.2s;
 }
 
+/* Collapsed state - hide content, rotate arrow */
 .nav-section.collapsed .nav-section-title i {
     transform: rotate(-90deg);
 }
@@ -135,8 +139,14 @@ body {
     display: none;
 }
 
+/* Expanded state - show content */
+.nav-section:not(.collapsed) .nav-section-content {
+    display: block;
+}
+
 .nav-section-content {
     margin-top: 4px;
+    display: block;
 }
 
 .nav-item {
