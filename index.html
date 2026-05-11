@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
@@ -30,7 +29,7 @@
                     <span>Dashboard</span>
                 </a>
                 
-                <div class="nav-section">
+                <div class="nav-section" data-section="employees">
                     <div class="nav-section-title">
                         <span>EMPLOYEES</span>
                         <i class="fas fa-chevron-down"></i>
@@ -51,7 +50,7 @@
                     </div>
                 </div>
                 
-                <div class="nav-section">
+                <div class="nav-section" data-section="payroll">
                     <div class="nav-section-title">
                         <span>PAYROLL</span>
                         <i class="fas fa-chevron-down"></i>
@@ -68,7 +67,7 @@
                     </div>
                 </div>
                 
-                <div class="nav-section">
+                <div class="nav-section" data-section="appraisal">
                     <div class="nav-section-title">
                         <span>APPRAISAL</span>
                         <i class="fas fa-chevron-down"></i>
@@ -85,7 +84,7 @@
                     </div>
                 </div>
                 
-                <div class="nav-section">
+                <div class="nav-section" data-section="leave">
                     <div class="nav-section-title">
                         <span>LEAVE</span>
                         <i class="fas fa-chevron-down"></i>
@@ -102,7 +101,7 @@
                     </div>
                 </div>
                 
-                <div class="nav-section">
+                <div class="nav-section" data-section="grievance">
                     <div class="nav-section-title">
                         <span>GRIEVANCE</span>
                         <i class="fas fa-chevron-down"></i>
@@ -123,11 +122,11 @@
             <div class="sidebar-footer">
                 <div class="api-status" id="apiStatus">
                     <i class="fas fa-circle"></i>
-                    <span>Checking connection...</span>
+                    <span>Checking...</span>
                 </div>
                 <div class="user-info-sidebar">
                     <i class="fas fa-user-circle"></i>
-                    <span>Admin User</span>
+                    <span>Admin</span>
                 </div>
             </div>
         </aside>
@@ -142,12 +141,8 @@
                     <h1 id="pageTitle">Dashboard</h1>
                 </div>
                 <div class="header-right">
-                    <div class="notification-icon">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </div>
                     <div class="user-menu">
-                        <div class="user-avatar-placeholder" style="width: 32px; height: 32px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                        <div class="user-avatar-placeholder">
                             <i class="fas fa-user"></i>
                         </div>
                         <span>Admin</span>
@@ -156,11 +151,7 @@
                 </div>
             </header>
             
-            <div class="content-area" id="contentArea">
-                <div class="loader-container" id="loader" style="display: none;">
-                    <div class="loader"></div>
-                    <p>Loading...</p>
-                </div>
+            <div class="content-area">
                 <div id="pageContent"></div>
             </div>
         </main>
@@ -168,13 +159,10 @@
     
     <div id="modalContainer"></div>
     
-    <!-- Load scripts in correct order -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
     <script src="js/router.js"></script>
     <script src="js/app.js"></script>
-    
-  
 </body>
 </html>
