@@ -7,11 +7,11 @@ const Router = {
     
     routes: {
         'dashboard': {
-            title: 'Dashboard',
-            html: 'pages/dashboard.html',
-            css: [],
-            js: []
-        },
+        title: 'Dashboard',
+        html: 'pages/dashboard.html',
+        css: ['css/dashboard.css'],
+        js: ['js/dashboard.js']
+    },
         'employee-list': {
             title: 'Employee List',
             html: 'pages/employee/list.html',
