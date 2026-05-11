@@ -1,0 +1,77 @@
+<div class="employee-documents-page">
+    <div class="page-header">
+        <h2><i class="fas fa-folder-open"></i> Employee Documents</h2>
+        <button class="btn btn-secondary" onclick="Router.navigate('employee-list')">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </button>
+    </div>
+    
+    <div class="documents-search-section">
+        <div class="search-card">
+            <h3>Find Employee Documents</h3>
+            <div class="search-box">
+                <input type="text" id="searchEmployeeNumber" placeholder="Enter Employee Number (e.g., GAP0001)">
+                <button id="searchEmployeeBtn" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="employeeInfoSection" style="display: none;">
+        <div class="employee-info-card">
+            <div class="employee-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="employee-details">
+                <h3 id="empNameDisplay">-</h3>
+                <p id="empDeptDisplay">-</p>
+                <p id="empNumberDisplay">-</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="documentsContent">
+        <div class="loader-container" style="display: none;">
+            <div class="loader"></div>
+            <p>Loading documents...</p>
+        </div>
+        
+        <div class="documents-grid-container" id="documentsGridContainer" style="display: none;">
+            <div class="upload-section">
+                <h3><i class="fas fa-cloud-upload-alt"></i> Upload New Document</h3>
+                <div class="upload-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Document Type</label>
+                            <select id="docType">
+                                <option value="ID">National ID / Passport</option>
+                                <option value="Certificate">Certificate</option>
+                                <option value="Degree">Degree / Diploma</option>
+                                <option value="Professional">Professional Certificate</option>
+                                <option value="CV">CV / Resume</option>
+                                <option value="Contract">Employment Contract</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select File</label>
+                            <input type="file" id="docFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary" id="uploadDocBtn">
+                                <i class="fas fa-upload"></i> Upload
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="documents-list-section">
+                <h3><i class="fas fa-list"></i> All Documents</h3>
+                <div id="documentsListContainer" class="documents-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
