@@ -1,4 +1,4 @@
-// js/api.js
+
 const API = {
     // Store the base URL from config
     baseUrl: CONFIG.API_URL,
