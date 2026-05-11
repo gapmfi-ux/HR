@@ -1,134 +1,59 @@
-// js/app.js
-// ============================================
-// MAIN APPLICATION
-// ============================================
-
 const App = {
-    /**
-     * Initialize the application
-     */
-    async init() {
-        console.log('Initializing HR System...');
-        
-        // Setup event listeners
+    init: function() {
         this.setupEventListeners();
-        
-        // Initialize router
+        this.loadSidebarState();
         Router.init();
-        
-        // Check API connection (using JSONP)
-        await this.checkAPIConnection();
-        
-        // Setup sidebar collapsible sections
-        this.setupSidebarSections();
-        
-        console.log('HR System initialized');
+        this.checkAPI();
     },
     
-    /**
-     * Setup global event listeners
-     */
-    setupEventListeners() {
-        // Mobile menu toggle
+    setupEventListeners: function() {
         const mobileToggle = document.getElementById('mobileMenuToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarClose = document.getElementById('sidebarClose');
         
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('mobile-open');
-            });
-        }
+        if(mobileToggle) mobileToggle.onclick = () => sidebar.classList.toggle('mobile-open');
+        if(sidebarClose) sidebarClose.onclick = () => sidebar.classList.remove('mobile-open');
         
-        if (sidebarClose) {
-            sidebarClose.addEventListener('click', () => {
-                sidebar.classList.remove('mobile-open');
-            });
-        }
-        
-        // Close sidebar on link click (mobile)
-        document.querySelectorAll('.nav-item').forEach(link => {
-            link.addEventListener('click', () => {
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.remove('mobile-open');
-                }
-            });
+        document.querySelectorAll('.nav-section-title').forEach(title => {
+            title.onclick = (e) => {
+                e.stopPropagation();
+                const section = title.closest('.nav-section');
+                section.classList.toggle('collapsed');
+                this.saveSidebarState();
+            };
         });
         
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                const modals = document.querySelectorAll('.modal.active');
-                modals.forEach(modal => {
-                    modal.classList.remove('active');
-                });
-            }
+        document.querySelectorAll('.nav-item').forEach(link => {
+            link.onclick = () => window.innerWidth <= 768 && sidebar.classList.remove('mobile-open');
         });
     },
     
-    /**
-     * Check API connection status using JSONP
-     */
-    async checkAPIConnection() {
+    loadSidebarState: function() {
+        document.querySelectorAll('.nav-section').forEach(section => {
+            const sectionName = section.dataset.section;
+            const isCollapsed = localStorage.getItem(`sidebar_${sectionName}`);
+            if(isCollapsed === 'true') section.classList.add('collapsed');
+        });
+    },
+    
+    saveSidebarState: function() {
+        document.querySelectorAll('.nav-section').forEach(section => {
+            const sectionName = section.dataset.section;
+            if(sectionName) localStorage.setItem(`sidebar_${sectionName}`, section.classList.contains('collapsed'));
+        });
+    },
+    
+    checkAPI: async function() {
         const statusEl = document.getElementById('apiStatus');
-        if (!statusEl) return;
-        
-        const isOnline = await API.testConnection();
-        
-        if (isOnline) {
-            statusEl.className = 'api-status online';
-            statusEl.querySelector('span').textContent = 'Connected';
-            statusEl.querySelector('i').style.color = '#22c55e';
-        } else {
-            statusEl.className = 'api-status offline';
-            statusEl.querySelector('span').textContent = 'Offline - Check URL';
-            statusEl.querySelector('i').style.color = '#ef4444';
-            console.warn('API is offline. Please check your Apps Script deployment URL in config.js');
-        }
-        
-        // Check periodically
+        const online = await API.testConnection();
+        statusEl.className = `api-status ${online ? 'online' : 'offline'}`;
+        statusEl.querySelector('span').textContent = online ? 'Connected' : 'Offline';
         setInterval(async () => {
             const online = await API.testConnection();
-            if (online) {
-                statusEl.className = 'api-status online';
-                statusEl.querySelector('span').textContent = 'Connected';
-                statusEl.querySelector('i').style.color = '#22c55e';
-            } else {
-                statusEl.className = 'api-status offline';
-                statusEl.querySelector('span').textContent = 'Offline';
-                statusEl.querySelector('i').style.color = '#ef4444';
-            }
+            statusEl.className = `api-status ${online ? 'online' : 'offline'}`;
+            statusEl.querySelector('span').textContent = online ? 'Connected' : 'Offline';
         }, 60000);
-    },
-    
-    /**
-     * Setup sidebar collapsible sections
-     */
-    setupSidebarSections() {
-        const sections = document.querySelectorAll('.nav-section');
-        sections.forEach(section => {
-            const title = section.querySelector('.nav-section-title');
-            if (title) {
-                title.addEventListener('click', () => {
-                    section.classList.toggle('collapsed');
-                    // Save state to localStorage
-                    const sectionTitle = title.querySelector('span')?.textContent || '';
-                    const isCollapsed = section.classList.contains('collapsed');
-                    localStorage.setItem(`sidebar_${sectionTitle}`, isCollapsed);
-                });
-                
-                // Restore saved state
-                const sectionTitle = title.querySelector('span')?.textContent || '';
-                const savedState = localStorage.getItem(`sidebar_${sectionTitle}`);
-                if (savedState === 'true') {
-                    section.classList.add('collapsed');
-                }
-            }
-        });
     }
 };
 
-// Initialize app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    App.init();
-});
+document.addEventListener('DOMContentLoaded', () => App.init());
