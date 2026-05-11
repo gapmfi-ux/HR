@@ -1,0 +1,334 @@
+<div class="employee-view-page">
+    <div class="page-header">
+        <div class="header-left">
+            <button class="btn btn-secondary" onclick="Router.navigate('employee-list')">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </button>
+            <h2>Employee Profile</h2>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary" id="editEmployeeBtn">
+                <i class="fas fa-edit"></i> Edit Employee
+            </button>
+            <button class="btn btn-secondary" id="printProfileBtn">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+    
+    <div id="employeeProfileContainer">
+        <div class="loader-container">
+            <div class="loader"></div>
+            <p>Loading employee details...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden template for employee profile -->
+<template id="profileTemplate">
+    <div class="employee-profile">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="profile-info">
+                <h2 class="employee-name">{name}</h2>
+                <p class="employee-designation">{designation}</p>
+                <div class="employee-meta">
+                    <span class="badge status-badge status-{statusClass}">{status}</span>
+                    <span class="badge"><i class="fas fa-id-card"></i> {employeeNumber}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Content Tabs -->
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="personal">
+                <i class="fas fa-user"></i> Personal Info
+            </button>
+            <button class="tab-btn" data-tab="employment">
+                <i class="fas fa-briefcase"></i> Employment
+            </button>
+            <button class="tab-btn" data-tab="education">
+                <i class="fas fa-graduation-cap"></i> Education
+            </button>
+            <button class="tab-btn" data-tab="guarantor">
+                <i class="fas fa-handshake"></i> Guarantors
+            </button>
+            <button class="tab-btn" data-tab="documents">
+                <i class="fas fa-folder-open"></i> Documents
+            </button>
+        </div>
+        
+        <!-- Tab: Personal Information -->
+        <div id="profile-personal" class="tab-pane active">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-id-card"></i> Basic Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Employee Number:</span>
+                        <span class="info-value">{employeeNumber}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Full Name:</span>
+                        <span class="info-value">{name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Sex:</span>
+                        <span class="info-value">{sex}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Nationality:</span>
+                        <span class="info-value">{nationality}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date of Birth:</span>
+                        <span class="info-value">{dob}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Place of Birth:</span>
+                        <span class="info-value">{placeOfBirth}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Age:</span>
+                        <span class="info-value">{age} years</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-address-card"></i> Identification</h3>
+                    <div class="info-row">
+                        <span class="info-label">ID Type:</span>
+                        <span class="info-value">{idType}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">ID Number:</span>
+                        <span class="info-value">{idNumber}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-phone-alt"></i> Contact Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Phone Number:</span>
+                        <span class="info-value">{contactTelephone}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">{email}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Residence:</span>
+                        <span class="info-value">{residence}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Digital Address:</span>
+                        <span class="info-value">{digitalAddress}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Landmark:</span>
+                        <span class="info-value">{landmark}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Residence Type:</span>
+                        <span class="info-value">{residenceType}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-heart"></i> Family Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Marital Status:</span>
+                        <span class="info-value">{maritalStatus}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Spouse Name:</span>
+                        <span class="info-value">{spouseName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Children:</span>
+                        <span class="info-value">{childrenCount}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Father's Name:</span>
+                        <span class="info-value">{fatherName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Mother's Name:</span>
+                        <span class="info-value">{motherName}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Next of Kin:</span>
+                        <span class="info-value">{nextOfKin}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kin Contact:</span>
+                        <span class="info-value">{kinContact}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Kin Residence:</span>
+                        <span class="info-value">{kinResidence}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Employment Information -->
+        <div id="profile-employment" class="tab-pane">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-calendar-alt"></i> Appointment Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Date of Appointment:</span>
+                        <span class="info-value">{appointmentDate}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date of Assumption:</span>
+                        <span class="info-value">{assumptionDate}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Years of Service:</span>
+                        <span class="info-value">{yearsOfService}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-briefcase"></i> Position Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Designation:</span>
+                        <span class="info-value">{designation}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Department:</span>
+                        <span class="info-value">{department}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Employment Type:</span>
+                        <span class="info-value">{employmentType}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-credit-card"></i> Identification Numbers</h3>
+                    <div class="info-row">
+                        <span class="info-label">SSNIT Number:</span>
+                        <span class="info-value">{ssnitNumber}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">TIN Number:</span>
+                        <span class="info-value">{tinNumber}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Education Information -->
+        <div id="profile-education" class="tab-pane">
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-school"></i> Secondary Education</h3>
+                    <div class="info-row">
+                        <span class="info-label">Institution:</span>
+                        <span class="info-value">{secondaryInstitution}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Major:</span>
+                        <span class="info-value">{secondaryMajor}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Year:</span>
+                        <span class="info-value">{secondaryYear}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-university"></i> Tertiary Education</h3>
+                    <div class="info-row">
+                        <span class="info-label">Institution:</span>
+                        <span class="info-value">{tertiaryInstitution}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Major:</span>
+                        <span class="info-value">{tertiaryMajor}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Year:</span>
+                        <span class="info-value">{tertiaryYear}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-certificate"></i> Professional Education</h3>
+                    <div class="info-row">
+                        <span class="info-label">Institution:</span>
+                        <span class="info-value">{professionalInstitution}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Major:</span>
+                        <span class="info-value">{professionalMajor}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Year:</span>
+                        <span class="info-value">{professionalYear}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Guarantor Information -->
+        <div id="profile-guarantor" class="tab-pane">
+            <div class="guarantors-grid">
+                <div class="info-card">
+                    <h3><i class="fas fa-user-check"></i> Guarantor 1</h3>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">{guarantor1Name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Contact:</span>
+                        <span class="info-value">{guarantor1Contact}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Address:</span>
+                        <span class="info-value">{guarantor1Address}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">{guarantor1Email}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3><i class="fas fa-user-check"></i> Guarantor 2</h3>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">{guarantor2Name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Contact:</span>
+                        <span class="info-value">{guarantor2Contact}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Address:</span>
+                        <span class="info-value">{guarantor2Address}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">{guarantor2Email}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tab: Documents -->
+        <div id="profile-documents" class="tab-pane">
+            <div class="documents-section">
+                <div class="documents-header">
+                    <h3><i class="fas fa-folder-open"></i> Employee Documents</h3>
+                </div>
+                <div id="profileDocumentsContainer" class="documents-grid"></div>
+            </div>
+        </div>
+    </div>
+</template>
