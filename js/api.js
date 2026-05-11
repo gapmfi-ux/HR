@@ -1,13 +1,20 @@
-// api.js
+// js/api.js
 const API = {
+    // Store the base URL from config
+    baseUrl: CONFIG.API_URL,
+    
     /**
      * Make API request to Google Apps Script backend
      */
     async request(action, data = {}) {
         console.log(`API Request: ${action}`, data);
         
+        // Show loading indicator for important requests
+        const showLoading = !['getEmployeeList', 'health'].includes(action);
+        if (showLoading && Utils) Utils.showLoading();
+        
         try {
-            const response = await fetch(CONFIG.API_URL, {
+            const response = await fetch(this.baseUrl, {
                 method: 'POST',
                 mode: 'cors',
                 headers: {
@@ -22,10 +29,20 @@ const API = {
             
             const result = await response.json();
             console.log(`API Response (${action}):`, result);
+            
+            if (showLoading && Utils) Utils.hideLoading();
+            
             return result;
             
         } catch (error) {
             console.error(`API Error (${action}):`, error);
+            if (showLoading && Utils) Utils.hideLoading();
+            
+            // Show user-friendly error message
+            if (Utils && action !== 'health') {
+                Utils.showToast('Network error. Please check your connection and try again.', 'error');
+            }
+            
             return { 
                 success: false, 
                 error: error.message || 'Network error occurred' 
@@ -35,82 +52,48 @@ const API = {
     
     // ==================== EMPLOYEE API ====================
     
-    /**
-     * Save new employee data
-     */
     async saveEmployee(employeeData) {
         return this.request('saveEmployee', employeeData);
     },
     
-    /**
-     * Get all employees list
-     */
     async getEmployeeList() {
         const result = await this.request('getEmployeeList');
-        return result.data || result;
+        return result.success ? result.data : [];
     },
     
-    /**
-     * Get employee by ID/number
-     */
     async getEmployeeById(employeeNumber) {
         const result = await this.request('getEmployeeById', { employeeNumber });
-        return result.data || result;
+        return result.success ? result.data : { error: result.error };
     },
     
-    /**
-     * Update existing employee
-     */
     async updateEmployee(employeeData) {
         return this.request('updateEmployee', employeeData);
     },
     
-    /**
-     * Get last employee number for auto-generation
-     */
-    async getLastEmployeeNumber() {
-        const result = await this.request('getLastEmployeeNumber');
-        return result.data || result;
-    },
-    
-    /**
-     * Delete employee (set status to inactive)
-     */
     async deleteEmployee(employeeNumber) {
         return this.request('deleteEmployee', { employeeNumber });
     },
     
+    async getLastEmployeeNumber() {
+        const result = await this.request('getLastEmployeeNumber');
+        return result.success ? result.data : null;
+    },
+    
     // ==================== DOCUMENTS API ====================
     
-    /**
-     * Upload document for employee
-     */
     async uploadDocument(documentData) {
         return this.request('uploadDocument', documentData);
     },
     
-    /**
-     * Get all documents for an employee
-     */
     async getEmployeeDocuments(employeeNumber) {
         const result = await this.request('getEmployeeDocuments', { employeeNumber });
-        return result.data || result;
-    },
-    
-    /**
-     * Delete document
-     */
-    async deleteDocument(documentId) {
-        return this.request('deleteDocument', { documentId });
+        return result.documents || [];
     },
     
     // ==================== GENERATE EMPLOYEE NUMBER ====================
     
-    /**
-     * Generate next employee number
-     */
     generateEmployeeNumber(lastNumber) {
-        if (!lastNumber || lastNumber === 'null' || lastNumber.error) {
+        if (!lastNumber || lastNumber === 'null') {
             return 'GAP0001';
         }
         const numStr = lastNumber.toString();
@@ -121,12 +104,9 @@ const API = {
     
     // ==================== HEALTH CHECK ====================
     
-    /**
-     * Check API connection health
-     */
     async checkHealth() {
         try {
-            const response = await fetch(CONFIG.API_URL, {
+            const response = await fetch(this.baseUrl, {
                 method: 'HEAD',
                 mode: 'cors'
             });
