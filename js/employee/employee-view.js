@@ -1,296 +1,348 @@
-// employee-view.js
+// js/employee/employee-view.js
 const EmployeeView = {
     employeeNumber: null,
     employeeData: null,
+    modal: null,
+    currentTab: 'personal',
     
-    /**
-     * Initialize employee view
-     */
-    async init(params = {}) {
-        console.log('Initializing Employee View', params);
+    init: async function(params = {}) {
+        console.log('EmployeeView init:', params);
         
-        if (!params.id) {
+        if(!params.id) {
             Utils.showToast('No employee specified', 'error');
-            Router.navigate('employee-list');
             return;
         }
         
         this.employeeNumber = params.id;
         await this.loadEmployeeData();
+        this.showModal();
         this.setupEventListeners();
     },
     
-    /**
-     * Setup event listeners
-     */
-    setupEventListeners() {
-        const editBtn = document.getElementById('editEmployeeBtn');
-        if (editBtn) {
-            editBtn.onclick = () => Router.navigate('employee-edit', { id: this.employeeNumber });
-        }
-        
-        const printBtn = document.getElementById('printProfileBtn');
-        if (printBtn) {
-            printBtn.onclick = () => this.printProfile();
-        }
-        
-        // Tab switching
-        const tabBtns = document.querySelectorAll('.profile-tabs .tab-btn');
-        tabBtns.forEach(btn => {
-            btn.onclick = () => this.switchTab(btn.dataset.tab);
-        });
-    },
-    
-    /**
-     * Load employee data from API
-     */
-    async loadEmployeeData() {
-        Utils.showLoading();
+    loadEmployeeData: async function() {
         const result = await API.getEmployeeById(this.employeeNumber);
-        Utils.hideLoading();
         
-        if (result.error) {
+        if(result.error) {
             Utils.showToast(result.error, 'error');
-            Router.navigate('employee-list');
-            return;
+            return null;
         }
         
         this.employeeData = result;
-        this.renderProfile();
+        return result;
     },
     
-    /**
-     * Render employee profile
-     */
-    renderProfile() {
-        const container = document.getElementById('employeeProfileContainer');
-        const template = document.getElementById('profileTemplate');
+    showModal: function() {
+        // Check if modal already exists
+        let modal = document.getElementById('employeeViewModal');
         
-        if (!container || !template) return;
-        
-        const data = this.employeeData;
-        const age = this.calculateAge(data.dob);
-        const yearsOfService = this.calculateYearsOfService(data.appointmentDate);
-        
-        // Create a copy of the template content
-        const content = template.content.cloneNode(true);
-        let html = content.firstElementChild.outerHTML;
-        
-        // Replace all placeholders
-        const replacements = {
-            '{employeeNumber}': data.employeeNumber || 'N/A',
-            '{name}': data.name || 'N/A',
-            '{sex}': data.sex || 'N/A',
-            '{nationality}': data.nationality || 'N/A',
-            '{idType}': data.idType || 'N/A',
-            '{idNumber}': data.idNumber || 'N/A',
-            '{dob}': Utils.formatDisplayDate(data.dob),
-            '{placeOfBirth}': data.placeOfBirth || 'N/A',
-            '{age}': age,
-            '{contactTelephone}': data.contactTelephone || 'N/A',
-            '{email}': data.email || 'N/A',
-            '{residence}': data.residence || 'N/A',
-            '{digitalAddress}': data.digitalAddress || 'N/A',
-            '{landmark}': data.landmark || 'N/A',
-            '{residenceType}': data.residenceType || 'N/A',
-            '{maritalStatus}': data.maritalStatus || 'N/A',
-            '{spouseName}': data.spouseName || 'N/A',
-            '{childrenCount}': data.childrenCount || '0',
-            '{fatherName}': data.fatherName || 'N/A',
-            '{motherName}': data.motherName || 'N/A',
-            '{nextOfKin}': data.nextOfKin || 'N/A',
-            '{kinContact}': data.kinContact || 'N/A',
-            '{kinResidence}': data.kinResidence || 'N/A',
-            '{appointmentDate}': Utils.formatDisplayDate(data.appointmentDate),
-            '{assumptionDate}': Utils.formatDisplayDate(data.assumptionDate),
-            '{yearsOfService}': yearsOfService,
-            '{designation}': data.designation || 'N/A',
-            '{department}': data.department || 'N/A',
-            '{employmentType}': data.employmentType || 'N/A',
-            '{ssnitNumber}': data.ssnitNumber || 'N/A',
-            '{tinNumber}': data.tinNumber || 'N/A',
-            '{secondaryInstitution}': data.secondaryInstitution || 'N/A',
-            '{secondaryMajor}': data.secondaryMajor || 'N/A',
-            '{secondaryYear}': data.secondaryYear || 'N/A',
-            '{tertiaryInstitution}': data.tertiaryInstitution || 'N/A',
-            '{tertiaryMajor}': data.tertiaryMajor || 'N/A',
-            '{tertiaryYear}': data.tertiaryYear || 'N/A',
-            '{professionalInstitution}': data.professionalInstitution || 'N/A',
-            '{professionalMajor}': data.professionalMajor || 'N/A',
-            '{professionalYear}': data.professionalYear || 'N/A',
-            '{guarantor1Name}': data.guarantor1Name || 'N/A',
-            '{guarantor1Contact}': data.guarantor1Contact || 'N/A',
-            '{guarantor1Address}': data.guarantor1Address || 'N/A',
-            '{guarantor1Email}': data.guarantor1Email || 'N/A',
-            '{guarantor2Name}': data.guarantor2Name || 'N/A',
-            '{guarantor2Contact}': data.guarantor2Contact || 'N/A',
-            '{guarantor2Address}': data.guarantor2Address || 'N/A',
-            '{guarantor2Email}': data.guarantor2Email || 'N/A',
-            '{status}': data.status || 'Active',
-            '{statusClass}': (data.status || 'Active').toLowerCase()
-        };
-        
-        for (const [placeholder, value] of Object.entries(replacements)) {
-            const regex = new RegExp(placeholder, 'g');
-            html = html.replace(regex, Utils.escapeHtml(String(value)));
-        }
-        
-        container.innerHTML = html;
-        
-        // Load documents after profile is rendered
-        this.loadDocuments();
-        
-        // Set active tab
-        this.switchTab('personal');
-    },
-    
-    /**
-     * Calculate age from date of birth
-     */
-    calculateAge(dob) {
-        if (!dob) return 'N/A';
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            age--;
-        }
-        return age;
-    },
-    
-    /**
-     * Calculate years of service
-     */
-    calculateYearsOfService(appointmentDate) {
-        if (!appointmentDate) return 'N/A';
-        const startDate = new Date(appointmentDate);
-        const today = new Date();
-        let years = today.getFullYear() - startDate.getFullYear();
-        const m = today.getMonth() - startDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < startDate.getDate())) {
-            years--;
-        }
-        return `${years} year(s)`;
-    },
-    
-    /**
-     * Switch between profile tabs
-     */
-    switchTab(tabId) {
-        // Update tab buttons
-        document.querySelectorAll('.profile-tabs .tab-btn').forEach(btn => {
-            if (btn.dataset.tab === tabId) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
-        
-        // Update tab panes
-        document.querySelectorAll('.profile-tabs ~ .tab-pane').forEach(pane => {
-            pane.classList.remove('active');
-        });
-        
-        const activePane = document.getElementById(`profile-${tabId}`);
-        if (activePane) {
-            activePane.classList.add('active');
+        if(!modal) {
+            // Load modal HTML
+            this.loadModalHTML();
+        } else {
+            this.renderContent();
+            modal.classList.add('active');
         }
     },
     
-    /**
-     * Load employee documents
-     */
-    async loadDocuments() {
-        const result = await API.getEmployeeDocuments(this.employeeNumber);
-        const documents = result.documents || result || [];
+    loadModalHTML: async function() {
+        const response = await fetch('pages/employee/view.html');
+        const html = await response.text();
         
-        const container = document.getElementById('profileDocumentsContainer');
-        if (!container) return;
+        // Insert modal into page
+        const modalContainer = document.getElementById('modalContainer');
+        if(modalContainer) {
+            modalContainer.innerHTML = html;
+        } else {
+            // Create modal container if not exists
+            const container = document.createElement('div');
+            container.id = 'modalContainer';
+            document.body.appendChild(container);
+            container.innerHTML = html;
+        }
         
-        if (documents.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state-small">
-                    <i class="fas fa-folder-open"></i>
-                    <p>No documents found for this employee</p>
+        this.modal = document.getElementById('employeeViewModal');
+        this.renderContent();
+        this.modal.classList.add('active');
+    },
+    
+    renderContent: function() {
+        const body = document.getElementById('employeeViewBody');
+        if(!body || !this.employeeData) return;
+        
+        const emp = this.employeeData;
+        const age = this.calculateAge(emp.dob);
+        
+        body.innerHTML = `
+            <div class="profile-header">
+                <div class="profile-avatar"><i class="fas fa-user-circle"></i></div>
+                <div class="profile-info">
+                    <h2>${Utils.escapeHtml(emp.name)}</h2>
+                    <div class="designation">${Utils.escapeHtml(emp.designation || 'N/A')}</div>
+                    <div class="profile-meta">
+                        <span class="badge"><i class="fas fa-id-card"></i> ${Utils.escapeHtml(emp.employeeNumber)}</span>
+                        <span class="badge status-${emp.status?.toLowerCase() === 'active' ? 'active' : 'inactive'}">${emp.status || 'Active'}</span>
+                    </div>
                 </div>
-            `;
+            </div>
+            
+            <div class="profile-tabs">
+                <button class="tab-btn active" data-tab="personal"><i class="fas fa-user"></i> Personal</button>
+                <button class="tab-btn" data-tab="employment"><i class="fas fa-briefcase"></i> Employment</button>
+                <button class="tab-btn" data-tab="education"><i class="fas fa-graduation-cap"></i> Education</button>
+                <button class="tab-btn" data-tab="guarantor"><i class="fas fa-handshake"></i> Guarantors</button>
+                <button class="tab-btn" data-tab="documents"><i class="fas fa-folder"></i> Documents</button>
+            </div>
+            
+            <div id="tab-personal" class="tab-pane active">
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-id-card"></i><h4>Basic Information</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Full Name:</span><span class="info-value">${Utils.escapeHtml(emp.name)}</span></div>
+                            <div class="info-row"><span class="info-label">Sex:</span><span class="info-value">${Utils.escapeHtml(emp.sex || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Nationality:</span><span class="info-value">${Utils.escapeHtml(emp.nationality || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Date of Birth:</span><span class="info-value">${Utils.formatDisplayDate(emp.dob)} (${age} yrs)</span></div>
+                            <div class="info-row"><span class="info-label">Place of Birth:</span><span class="info-value">${Utils.escapeHtml(emp.placeOfBirth || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">ID Type:</span><span class="info-value">${Utils.escapeHtml(emp.idType || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">ID Number:</span><span class="info-value">${Utils.escapeHtml(emp.idNumber || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-phone"></i><h4>Contact Information</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Phone:</span><span class="info-value">${Utils.escapeHtml(emp.contactTelephone || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Residence:</span><span class="info-value">${Utils.escapeHtml(emp.residence || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Digital Address:</span><span class="info-value">${Utils.escapeHtml(emp.digitalAddress || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Landmark:</span><span class="info-value">${Utils.escapeHtml(emp.landmark || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Residence Type:</span><span class="info-value">${Utils.escapeHtml(emp.residenceType || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-heart"></i><h4>Family Information</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Marital Status:</span><span class="info-value">${Utils.escapeHtml(emp.maritalStatus || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Spouse:</span><span class="info-value">${Utils.escapeHtml(emp.spouseName || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Children:</span><span class="info-value">${emp.childrenCount || 0}</span></div>
+                            <div class="info-row"><span class="info-label">Father:</span><span class="info-value">${Utils.escapeHtml(emp.fatherName || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Mother:</span><span class="info-value">${Utils.escapeHtml(emp.motherName || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Next of Kin:</span><span class="info-value">${Utils.escapeHtml(emp.nextOfKin || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Kin Contact:</span><span class="info-value">${Utils.escapeHtml(emp.kinContact || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Kin Residence:</span><span class="info-value">${Utils.escapeHtml(emp.kinResidence || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-employment" class="tab-pane">
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-calendar"></i><h4>Appointment Details</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Date of Appointment:</span><span class="info-value">${Utils.formatDisplayDate(emp.appointmentDate)}</span></div>
+                            <div class="info-row"><span class="info-label">Assumption Date:</span><span class="info-value">${Utils.formatDisplayDate(emp.assumptionDate)}</span></div>
+                            <div class="info-row"><span class="info-label">Designation:</span><span class="info-value">${Utils.escapeHtml(emp.designation || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Department:</span><span class="info-value">${Utils.escapeHtml(emp.department || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Employment Type:</span><span class="info-value">${Utils.escapeHtml(emp.employmentType || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-credit-card"></i><h4>Identification Numbers</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">SSNIT Number:</span><span class="info-value">${Utils.escapeHtml(emp.ssnitNumber || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">TIN Number:</span><span class="info-value">${Utils.escapeHtml(emp.tinNumber || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-education" class="tab-pane">
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-school"></i><h4>Secondary Education</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Institution:</span><span class="info-value">${Utils.escapeHtml(emp.secondaryInstitution || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Major:</span><span class="info-value">${Utils.escapeHtml(emp.secondaryMajor || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Year:</span><span class="info-value">${Utils.escapeHtml(emp.secondaryYear || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-university"></i><h4>Tertiary Education</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Institution:</span><span class="info-value">${Utils.escapeHtml(emp.tertiaryInstitution || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Major:</span><span class="info-value">${Utils.escapeHtml(emp.tertiaryMajor || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Year:</span><span class="info-value">${Utils.escapeHtml(emp.tertiaryYear || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <div class="info-section-header"><i class="fas fa-certificate"></i><h4>Professional Education</h4></div>
+                    <div class="info-section-body">
+                        <div class="info-grid">
+                            <div class="info-row"><span class="info-label">Institution:</span><span class="info-value">${Utils.escapeHtml(emp.professionalInstitution || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Major:</span><span class="info-value">${Utils.escapeHtml(emp.professionalMajor || 'N/A')}</span></div>
+                            <div class="info-row"><span class="info-label">Year:</span><span class="info-value">${Utils.escapeHtml(emp.professionalYear || 'N/A')}</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-guarantor" class="tab-pane">
+                <div class="guarantors-row">
+                    <div class="guarantor-card">
+                        <h5><i class="fas fa-user-check"></i> Guarantor 1</h5>
+                        <div class="info-row"><span class="info-label">Name:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor1Name || 'N/A')}</span></div>
+                        <div class="info-row"><span class="info-label">Contact:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor1Contact || 'N/A')}</span></div>
+                        <div class="info-row"><span class="info-label">Address:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor1Address || 'N/A')}</span></div>
+                        <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor1Email || 'N/A')}</span></div>
+                    </div>
+                    <div class="guarantor-card">
+                        <h5><i class="fas fa-user-check"></i> Guarantor 2</h5>
+                        <div class="info-row"><span class="info-label">Name:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor2Name || 'N/A')}</span></div>
+                        <div class="info-row"><span class="info-label">Contact:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor2Contact || 'N/A')}</span></div>
+                        <div class="info-row"><span class="info-label">Address:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor2Address || 'N/A')}</span></div>
+                        <div class="info-row"><span class="info-label">Email:</span><span class="info-value">${Utils.escapeHtml(emp.guarantor2Email || 'N/A')}</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-documents" class="tab-pane">
+                <div class="documents-list" id="empDocumentsList">
+                    <div class="loader-small">Loading documents...</div>
+                </div>
+            </div>
+        `;
+        
+        // Setup tabs
+        this.setupTabs();
+        
+        // Load documents
+        this.loadDocuments();
+    },
+    
+    setupTabs: function() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(btn => {
+            btn.onclick = () => {
+                const tabName = btn.dataset.tab;
+                this.currentTab = tabName;
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update panes
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('active');
+                });
+                const activePane = document.getElementById(`tab-${tabName}`);
+                if(activePane) activePane.classList.add('active');
+            };
+        });
+    },
+    
+    loadDocuments: async function() {
+        const container = document.getElementById('empDocumentsList');
+        if(!container) return;
+        
+        const docs = await API.getEmployeeDocuments(this.employeeNumber);
+        
+        if(!docs || docs.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>No documents found</p></div>';
             return;
         }
         
-        container.innerHTML = documents.map(doc => `
-            <div class="document-card">
-                <div class="document-icon">
+        container.innerHTML = docs.map(doc => `
+            <div class="doc-item">
+                <div class="doc-info">
                     <i class="fas ${Utils.getFileIcon(doc.mimeType)}"></i>
-                </div>
-                <div class="document-details">
-                    <div class="document-name">${Utils.escapeHtml(doc.fileName)}</div>
-                    <div class="document-meta">
-                        <span class="document-type">${Utils.escapeHtml(doc.documentType)}</span>
-                        <span class="document-date">${Utils.formatDisplayDate(doc.uploadDate)}</span>
+                    <div>
+                        <div class="doc-name">${Utils.escapeHtml(doc.fileName)}</div>
+                        <div class="doc-date">${Utils.formatDisplayDate(doc.uploadDate)}</div>
                     </div>
                 </div>
-                <div class="document-actions">
-                    <button class="doc-action-btn" onclick="EmployeeView.downloadDocument('${doc.fileUrl}', '${doc.fileName}')">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
+                <button class="doc-action" onclick="EmployeeView.downloadDoc('${doc.fileUrl}', '${doc.fileName}')">
+                    <i class="fas fa-download"></i>
+                </button>
             </div>
         `).join('');
     },
     
-    /**
-     * Download document
-     */
-    downloadDocument(url, filename) {
+    setupEventListeners: function() {
+        // Edit button
+        const editBtn = document.getElementById('viewEditBtn');
+        if(editBtn) {
+            editBtn.onclick = () => {
+                this.close();
+                Router.navigate('employee-edit', { id: this.employeeNumber });
+            };
+        }
+        
+        // Print button
+        const printBtn = document.getElementById('viewPrintBtn');
+        if(printBtn) {
+            printBtn.onclick = () => this.printProfile();
+        }
+    },
+    
+    calculateAge: function(dob) {
+        if(!dob) return 'N/A';
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if(m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+        return age;
+    },
+    
+    downloadDoc: function(url, filename) {
         window.open(url, '_blank');
     },
     
-    /**
-     * Print employee profile
-     */
-    printProfile() {
-        const printContent = document.querySelector('.employee-profile').cloneNode(true);
-        
-        // Remove action buttons for print
-        printContent.querySelectorAll('.document-actions, .btn, .action-btn, #editEmployeeBtn, #printProfileBtn').forEach(el => {
-            if (el) el.remove();
-        });
-        
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
+    printProfile: function() {
+        const printContent = document.querySelector('#employeeViewBody').cloneNode(true);
+        const win = window.open('', '_blank');
+        win.document.write(`
             <!DOCTYPE html>
             <html>
-            <head>
-                <title>Employee Profile - ${this.employeeData.employeeNumber}</title>
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                <style>
-                    * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { font-family: 'Inter', sans-serif; padding: 40px; background: white; }
-                    .employee-profile { max-width: 1200px; margin: 0 auto; }
-                    .profile-header { display: flex; gap: 24px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #3b82f6; }
-                    .profile-avatar i { font-size: 80px; color: #3b82f6; }
-                    .employee-name { font-size: 28px; margin-bottom: 8px; }
-                    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 24px; }
-                    .info-card { border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; }
-                    .info-card h3 { margin-bottom: 16px; color: #3b82f6; }
-                    .info-row { display: flex; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-                    .info-label { width: 140px; font-weight: 600; color: #64748b; }
-                    .info-value { flex: 1; color: #1e293b; }
-                    @media print {
-                        body { padding: 20px; }
-                        .info-card { break-inside: avoid; }
-                    }
-                </style>
+            <head><title>Employee Profile</title>
+            <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+            <style>
+                body{font-family:Arial,sans-serif;padding:20px}
+                .profile-header{background:#1e293b;padding:20px;color:white;border-radius:10px}
+                .info-section{margin-bottom:20px;border:1px solid #ddd;border-radius:8px}
+                .info-section-header{background:#f5f5f5;padding:10px;border-bottom:1px solid #ddd}
+                .info-section-body{padding:15px}
+                .info-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+                .info-row{display:flex;padding:5px 0}
+                .info-label{width:130px;font-weight:bold}
+                @media print{.profile-tabs,.modal-footer,.doc-action{display:none}}
+            </style>
             </head>
-            <body>
-                ${printContent.outerHTML}
-                <script>window.onload = () => window.print();<\/script>
-            </body>
+            <body>${printContent.innerHTML}</body>
             </html>
         `);
-        printWindow.document.close();
+        win.document.close();
+        win.print();
+    },
+    
+    close: function() {
+        const modal = document.getElementById('employeeViewModal');
+        if(modal) {
+            modal.classList.remove('active');
+        }
     }
 };
 
