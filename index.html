@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-building"></i>
+                    <span>HR System</span>
+                </div>
+                <button class="sidebar-close" id="sidebarClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <!-- Employees Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <span>EMPLOYEES</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="nav-section-content">
+                        <a href="#" class="nav-item" data-page="employee-list">
+                            <i class="fas fa-users"></i>
+                            <span>Employee List</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="employee-add">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Add Employee</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="employee-documents">
+                            <i class="fas fa-folder-open"></i>
+                            <span>Documents</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Payroll Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <span>PAYROLL</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="nav-section-content">
+                        <a href="#" class="nav-item" data-page="payroll-process">
+                            <i class="fas fa-calculator"></i>
+                            <span>Process Payroll</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="payroll-register">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Payroll Register</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="payslip">
+                            <i class="fas fa-receipt"></i>
+                            <span>Generate Payslip</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Appraisal Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <span>APPRAISAL</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="nav-section-content">
+                        <a href="#" class="nav-item" data-page="appraisal-new">
+                            <i class="fas fa-chart-line"></i>
+                            <span>New Appraisal</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="appraisal-history">
+                            <i class="fas fa-history"></i>
+                            <span>Appraisal History</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Leave Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <span>LEAVE</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="nav-section-content">
+                        <a href="#" class="nav-item" data-page="leave-apply">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Apply for Leave</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="leave-balance">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Leave Balance</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="leave-history">
+                            <i class="fas fa-list"></i>
+                            <span>Leave History</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Grievance Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">
+                        <span>GRIEVANCE</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="nav-section-content">
+                        <a href="#" class="nav-item" data-page="grievance-new">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>File Grievance</span>
+                        </a>
+                        <a href="#" class="nav-item" data-page="grievance-view">
+                            <i class="fas fa-eye"></i>
+                            <span>View Grievances</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="api-status" id="apiStatus">
+                    <i class="fas fa-circle"></i>
+                    <span>Checking connection...</span>
+                </div>
+                <div class="user-info-sidebar">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin User</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-menu">
+                        <img src="assets/images/default-avatar.png" alt="Avatar" class="user-avatar">
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+            
+            <div class="content-area" id="contentArea">
+                <div class="loader-container" id="loader">
+                    <div class="loader"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="pageContent"></div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modals Container -->
+    <div id="modalContainer"></div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- Employee Module Scripts (loaded on demand) -->
+</body>
+</html>
