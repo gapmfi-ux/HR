@@ -1,8 +1,3 @@
-// js/config.js
-// ============================================
-// CONFIGURATION
-// ============================================
-
 const CONFIG = {
     // IMPORTANT: Replace with your deployed Apps Script Web App URL
     // The URL should end with /exec
