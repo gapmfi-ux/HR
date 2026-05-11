@@ -1,0 +1,27 @@
+<div class="employee-list-page">
+    <div class="page-header">
+        <h2>Employee Directory</h2>
+        <button class="btn btn-primary" onclick="Router.navigate('employee-add')">
+            <i class="fas fa-user-plus"></i> Add New Employee
+        </button>
+    </div>
+    
+    <div class="search-filter-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by name, number or department...">
+        <select id="statusFilter" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+        </select>
+        <button id="exportBtn" class="btn btn-secondary">
+            <i class="fas fa-download"></i> Export CSV
+        </button>
+    </div>
+    
+    <div id="employeeTableContainer">
+        <div class="loader-container">
+            <div class="loader"></div>
+            <p>Loading employees...</p>
+        </div>
+    </div>
+</div>
