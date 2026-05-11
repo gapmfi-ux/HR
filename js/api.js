@@ -1,7 +1,3 @@
-// js/api.js
-// ============================================
-// API CLIENT - Supports JSONP (CORS bypass) and POST methods
-// ============================================
 
 const API = {
     // Store the base URL from config
