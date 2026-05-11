@@ -1,4 +1,8 @@
-// app.js
+// js/app.js
+// ============================================
+// MAIN APPLICATION
+// ============================================
+
 const App = {
     /**
      * Initialize the application
@@ -12,8 +16,8 @@ const App = {
         // Initialize router
         Router.init();
         
-        // Check API connection
-        this.checkAPIConnection();
+        // Check API connection (using JSONP)
+        await this.checkAPIConnection();
         
         // Setup sidebar collapsible sections
         this.setupSidebarSections();
@@ -60,37 +64,41 @@ const App = {
                 });
             }
         });
-        
-        // Handle clicks outside modal
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-            }
-        });
     },
     
     /**
-     * Check API connection status
+     * Check API connection status using JSONP
      */
     async checkAPIConnection() {
         const statusEl = document.getElementById('apiStatus');
         if (!statusEl) return;
         
-        const isOnline = await API.checkHealth();
-        statusEl.className = `api-status ${isOnline ? 'online' : 'offline'}`;
-        statusEl.querySelector('span').textContent = isOnline ? 'Connected' : 'Offline';
+        const isOnline = await API.testConnection();
         
-        if (!isOnline) {
-            console.warn('API is offline. Please check your connection and Apps Script deployment.');
-            Utils.showToast('Cannot connect to server. Please check your network.', 'error');
+        if (isOnline) {
+            statusEl.className = 'api-status online';
+            statusEl.querySelector('span').textContent = 'Connected';
+            statusEl.querySelector('i').style.color = '#22c55e';
+        } else {
+            statusEl.className = 'api-status offline';
+            statusEl.querySelector('span').textContent = 'Offline - Check URL';
+            statusEl.querySelector('i').style.color = '#ef4444';
+            console.warn('API is offline. Please check your Apps Script deployment URL in config.js');
         }
         
         // Check periodically
         setInterval(async () => {
-            const online = await API.checkHealth();
-            statusEl.className = `api-status ${online ? 'online' : 'offline'}`;
-            statusEl.querySelector('span').textContent = online ? 'Connected' : 'Offline';
-        }, 30000);
+            const online = await API.testConnection();
+            if (online) {
+                statusEl.className = 'api-status online';
+                statusEl.querySelector('span').textContent = 'Connected';
+                statusEl.querySelector('i').style.color = '#22c55e';
+            } else {
+                statusEl.className = 'api-status offline';
+                statusEl.querySelector('span').textContent = 'Offline';
+                statusEl.querySelector('i').style.color = '#ef4444';
+            }
+        }, 60000);
     },
     
     /**
@@ -116,46 +124,6 @@ const App = {
                     section.classList.add('collapsed');
                 }
             }
-        });
-    },
-    
-    /**
-     * Show modal
-     */
-    showModal(content, title = 'Modal') {
-        const modalContainer = document.getElementById('modalContainer');
-        if (!modalContainer) return;
-        
-        modalContainer.innerHTML = `
-            <div class="modal active">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>${Utils.escapeHtml(title)}</h3>
-                        <button class="modal-close">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        ${content}
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        const modal = modalContainer.querySelector('.modal');
-        const closeBtn = modal.querySelector('.modal-close');
-        
-        closeBtn.onclick = () => {
-            modal.classList.remove('active');
-            setTimeout(() => modal.remove(), 300);
-        };
-    },
-    
-    /**
-     * Close all modals
-     */
-    closeModals() {
-        const modals = document.querySelectorAll('.modal.active');
-        modals.forEach(modal => {
-            modal.classList.remove('active');
         });
     }
 };
