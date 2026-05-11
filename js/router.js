@@ -1,17 +1,17 @@
-// router.js
+// js/router.js
 const Router = {
     currentPage: 'dashboard',
     currentParams: {},
+    loadedScripts: new Set(),
+    loadedStyles: new Set(),
     
-    // Route definitions
     routes: {
         'dashboard': {
             title: 'Dashboard',
             html: 'pages/dashboard.html',
-            css: ['css/dashboard.css'],
-            js: ['js/dashboard.js']
+            css: [],
+            js: []
         },
-        // Employee routes
         'employee-list': {
             title: 'Employee List',
             html: 'pages/employee/list.html',
@@ -41,18 +41,7 @@ const Router = {
             html: 'pages/employee/documents.html',
             css: ['css/employee/employee-documents.css'],
             js: ['js/employee/employee-documents.js']
-        },
-        // Placeholder routes for other modules
-        'payroll-process': { title: 'Process Payroll', html: 'pages/payroll/process.html' },
-        'payroll-register': { title: 'Payroll Register', html: 'pages/payroll/register.html' },
-        'payslip': { title: 'Generate Payslip', html: 'pages/payroll/payslip.html' },
-        'appraisal-new': { title: 'New Appraisal', html: 'pages/appraisal/new.html' },
-        'appraisal-history': { title: 'Appraisal History', html: 'pages/appraisal/history.html' },
-        'leave-apply': { title: 'Apply for Leave', html: 'pages/leave/apply.html' },
-        'leave-balance': { title: 'Leave Balance', html: 'pages/leave/balance.html' },
-        'leave-history': { title: 'Leave History', html: 'pages/leave/history.html' },
-        'grievance-new': { title: 'File Grievance', html: 'pages/grievance/new.html' },
-        'grievance-view': { title: 'View Grievances', html: 'pages/grievance/view.html' }
+        }
     },
     
     /**
@@ -76,8 +65,11 @@ const Router = {
             this.loadPage(page, e.state?.params || {});
         });
         
-        // Load initial page
-        const initialPage = window.location.hash.replace('#', '') || 'dashboard';
+        // Load initial page from hash or default
+        let initialPage = window.location.hash.replace('#', '');
+        if (!initialPage || !this.routes[initialPage]) {
+            initialPage = 'dashboard';
+        }
         this.navigate(initialPage);
     },
     
@@ -89,7 +81,7 @@ const Router = {
             this.currentPage = page;
             this.currentParams = params;
             
-            // Update URL
+            // Update URL without causing reload
             window.history.pushState({ page, params }, '', `#${page}`);
             
             // Update page title
@@ -125,19 +117,23 @@ const Router = {
         const contentArea = document.getElementById('pageContent');
         if (!contentArea) return;
         
-        // Show loader
-        Utils.showLoading();
-        
         try {
+            // Show loader
+            const loader = document.getElementById('loader');
+            if (loader) loader.style.display = 'flex';
+            
             // Load HTML
             const htmlResponse = await fetch(route.html);
+            if (!htmlResponse.ok) {
+                throw new Error(`Failed to load ${route.html}`);
+            }
             const html = await htmlResponse.text();
             contentArea.innerHTML = html;
             
-            // Load CSS files
+            // Load CSS files (don't await, they load async)
             if (route.css) {
                 for (const cssFile of route.css) {
-                    await this.loadCSS(cssFile);
+                    this.loadCSS(cssFile);
                 }
             }
             
@@ -154,7 +150,7 @@ const Router = {
             });
             document.dispatchEvent(event);
             
-            // If there's a module with init function, call it
+            // Initialize module if available
             const moduleName = this.getModuleName(page);
             if (window[moduleName] && typeof window[moduleName].init === 'function') {
                 window[moduleName].init(params);
@@ -165,11 +161,13 @@ const Router = {
             contentArea.innerHTML = `
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-circle"></i>
-                    <span>Failed to load page. Please try again.</span>
+                    <span>Failed to load page: ${error.message}. Please refresh and try again.</span>
                 </div>
             `;
+            if (Utils) Utils.showToast('Failed to load page', 'error');
         } finally {
-            Utils.hideLoading();
+            const loader = document.getElementById('loader');
+            if (loader) loader.style.display = 'none';
         }
     },
     
@@ -177,38 +175,43 @@ const Router = {
      * Load CSS dynamically
      */
     loadCSS(href) {
-        return new Promise((resolve) => {
-            const link = document.querySelector(`link[href="${href}"]`);
-            if (link) {
-                resolve();
-                return;
-            }
-            
-            const newLink = document.createElement('link');
-            newLink.rel = 'stylesheet';
-            newLink.href = href;
-            newLink.onload = () => resolve();
-            newLink.onerror = () => resolve();
-            document.head.appendChild(newLink);
-        });
+        if (this.loadedStyles.has(href)) return;
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => {
+            this.loadedStyles.add(href);
+            console.log(`CSS loaded: ${href}`);
+        };
+        link.onerror = () => {
+            console.warn(`Failed to load CSS: ${href}`);
+        };
+        document.head.appendChild(link);
     },
     
     /**
      * Load JavaScript dynamically
      */
     loadScript(src) {
-        return new Promise((resolve) => {
-            const script = document.querySelector(`script[src="${src}"]`);
-            if (script) {
+        return new Promise((resolve, reject) => {
+            if (this.loadedScripts.has(src)) {
                 resolve();
                 return;
             }
             
-            const newScript = document.createElement('script');
-            newScript.src = src;
-            newScript.onload = () => resolve();
-            newScript.onerror = () => resolve();
-            document.body.appendChild(newScript);
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = () => {
+                this.loadedScripts.add(src);
+                console.log(`Script loaded: ${src}`);
+                resolve();
+            };
+            script.onerror = () => {
+                console.warn(`Failed to load script: ${src}`);
+                reject(new Error(`Failed to load ${src}`));
+            };
+            document.body.appendChild(script);
         });
     },
     
@@ -217,11 +220,12 @@ const Router = {
      */
     getModuleName(page) {
         const parts = page.split('-');
-        if (parts[0] === 'employee') return 'Employee';
-        if (parts[0] === 'payroll') return 'Payroll';
-        if (parts[0] === 'appraisal') return 'Appraisal';
-        if (parts[0] === 'leave') return 'Leave';
-        if (parts[0] === 'grievance') return 'Grievance';
-        return 'Dashboard';
+        if (parts[0] === 'employee') {
+            if (parts[1] === 'list') return 'EmployeeList';
+            if (parts[1] === 'add' || parts[1] === 'edit') return 'Employee';
+            if (parts[1] === 'view') return 'EmployeeView';
+            if (parts[1] === 'documents') return 'EmployeeDocuments';
+        }
+        return null;
     }
 };
