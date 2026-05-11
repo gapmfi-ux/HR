@@ -1,30 +1,19 @@
 // config.js
 const CONFIG = {
     // IMPORTANT: Replace with your deployed Apps Script Web App URL
-    API_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbxk_k354RlIbl5bLNdSRQxPdkUOlWUqIL6vzVYWkZGwL_T5GmEd2N_jCJCP9f_MjsoQ2A/exec',
     
-    // Google Sheet ID (reference only)
-    SHEET_ID: '153Q9II0uSsbkpWQVrZceRftKnCl2Fj2629jk_HnFKGA',
-    
-    // Sheet names
-    SHEETS: {
-        EMPLOYEE_DATA: 'Employee Data',
-        PAYROLL: 'payroll',
-        APPRAISAL: 'Appraisal',
-        GRIEVANCE: 'Grievances',
-        EMPLOYEE_DOCS: 'EmployeeDocs'
-    },
+    // Employee number prefix
+    EMPLOYEE_PREFIX: 'GAP',
     
     // App settings
     APP_NAME: 'HR Management System',
     VERSION: '2.0.0',
     
-    // Employee number prefix
-    EMPLOYEE_PREFIX: 'GAP',
-    
     // Pagination
     ITEMS_PER_PAGE: 25,
     
-    // Date format
-    DATE_FORMAT: 'YYYY-MM-DD'
+    // File upload limits
+    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+    ALLOWED_FILE_TYPES: ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 };
