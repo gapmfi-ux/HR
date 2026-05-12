@@ -1,8 +1,7 @@
-// js/app.js
 const App = {
     init: function() {
         this.setupEventListeners();
-        this.initSidebarState();  // Initialize sidebar to collapsed
+        this.initSidebarState();
         Router.init();
         this.checkAPI();
     },
@@ -12,32 +11,46 @@ const App = {
         const sidebar = document.getElementById('sidebar');
         const sidebarClose = document.getElementById('sidebarClose');
         
-        if(mobileToggle) mobileToggle.onclick = () => sidebar.classList.toggle('mobile-open');
-        if(sidebarClose) sidebarClose.onclick = () => sidebar.classList.remove('mobile-open');
+        // Mobile menu toggle
+        if(mobileToggle) {
+            mobileToggle.onclick = () => sidebar.classList.toggle('mobile-open');
+        }
         
-        // Setup section toggle on arrow click only
+        if(sidebarClose) {
+            sidebarClose.onclick = () => sidebar.classList.remove('mobile-open');
+        }
+        
+        // Setup section toggle on title click only
         document.querySelectorAll('.nav-section-title').forEach(title => {
             title.onclick = (e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // Prevent event bubbling
                 const section = title.closest('.nav-section');
+                if(!section) return;
+                
                 // Toggle collapsed class
                 section.classList.toggle('collapsed');
+                
                 // Save state to localStorage
                 this.saveSectionState(section);
             };
         });
         
-        // Close mobile sidebar on nav click
+        // Close mobile sidebar when nav item is clicked
         document.querySelectorAll('.nav-item').forEach(link => {
             link.onclick = () => {
-                if(window.innerWidth <= 768) sidebar.classList.remove('mobile-open');
+                if(window.innerWidth <= 768) {
+                    sidebar.classList.remove('mobile-open');
+                }
             };
         });
     },
     
-    // Initialize sidebar - ALL SECTIONS COLLAPSED by default
+    /**
+     * Initialize sidebar state - ALL SECTIONS COLLAPSED by default
+     */
     initSidebarState: function() {
         const sections = document.querySelectorAll('.nav-section');
+        
         sections.forEach(section => {
             const sectionName = section.dataset.section;
             if(!sectionName) return;
@@ -51,35 +64,43 @@ const App = {
             } else if(savedState === 'true') {
                 // User had it collapsed
                 section.classList.add('collapsed');
-            } else {
+            } else if(savedState === 'false') {
                 // User had it expanded
                 section.classList.remove('collapsed');
             }
         });
     },
     
-    // Save individual section state
+    /**
+     * Save individual section state to localStorage
+     */
     saveSectionState: function(section) {
         const sectionName = section.dataset.section;
-        if(sectionName) {
-            const isCollapsed = section.classList.contains('collapsed');
-            localStorage.setItem(`sidebar_${sectionName}`, isCollapsed);
-        }
+        if(!sectionName) return;
+        
+        const isCollapsed = section.classList.contains('collapsed');
+        // Save as string 'true' or 'false'
+        localStorage.setItem(`sidebar_${sectionName}`, String(isCollapsed));
     },
     
+    /**
+     * Check API connection status
+     */
     checkAPI: async function() {
         const statusEl = document.getElementById('apiStatus');
         if(!statusEl) return;
         
-        const online = await API.testConnection();
-        statusEl.className = `api-status ${online ? 'online' : 'offline'}`;
-        statusEl.querySelector('span').textContent = online ? 'Connected' : 'Offline';
-        
-        setInterval(async () => {
+        const updateStatus = async () => {
             const online = await API.testConnection();
             statusEl.className = `api-status ${online ? 'online' : 'offline'}`;
             statusEl.querySelector('span').textContent = online ? 'Connected' : 'Offline';
-        }, 60000);
+        };
+        
+        // Initial check
+        await updateStatus();
+        
+        // Check every 60 seconds
+        setInterval(updateStatus, 60000);
     }
 };
 
