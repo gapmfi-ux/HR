@@ -1,3 +1,4 @@
+// js/app.js
 const App = {
     init: function() {
         this.setupEventListeners();
