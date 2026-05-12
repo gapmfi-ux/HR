@@ -1,4 +1,3 @@
-// js/employee/employee-view.js
 const EmployeeView = {
     employeeNumber: null,
     employeeData: null,
@@ -8,13 +7,25 @@ const EmployeeView = {
         
         if(!params.id) {
             Utils.showToast('No employee specified', 'error');
+            Router.navigate('employee-list');
             return;
         }
         
         this.employeeNumber = params.id;
-        await this.loadEmployeeData();
-        this.showModal();
-        this.setupEventListeners();
+        
+        // Show loading state
+        Utils.showLoading();
+        
+        try {
+            await this.loadEmployeeData();
+            Utils.hideLoading();
+            this.showModal();
+            this.setupEventListeners();
+        } catch(e) {
+            Utils.hideLoading();
+            Utils.showToast('Failed to load employee details', 'error');
+            Router.navigate('employee-list');
+        }
     },
     
     loadEmployeeData: async function() {
@@ -22,7 +33,7 @@ const EmployeeView = {
         
         if(result.error) {
             Utils.showToast(result.error, 'error');
-            return null;
+            throw new Error(result.error);
         }
         
         this.employeeData = result;
@@ -36,7 +47,7 @@ const EmployeeView = {
             this.loadModalHTML();
         } else {
             this.populateModal();
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
         }
     },
     
@@ -55,7 +66,7 @@ const EmployeeView = {
         this.populateModal();
         
         const modal = document.getElementById('summaryModal');
-        if(modal) modal.style.display = 'block';
+        if(modal) modal.style.display = 'flex';
     },
     
     populateModal: function() {
@@ -80,7 +91,7 @@ const EmployeeView = {
         this.setElementText('empNationality', emp.nationality);
         this.setElementText('empIdType', emp.idType);
         this.setElementText('empIdNumber', emp.idNumber);
-        this.setElementText('empContactTelephone', emp.contactTelephone);
+        this.setElementText('empContactTelephone', emp.contactTelephone || emp.contactNumber);
         this.setElementText('empEmail', emp.email || 'N/A');
         this.setElementText('empPlaceOfResidence', emp.residence);
         this.setElementText('empResidenceType', emp.residenceType);
@@ -96,12 +107,12 @@ const EmployeeView = {
         this.setElementText('empKinResidence', emp.kinResidence);
         
         // Employment Details
-        this.setElementText('empDateOfAppointment', this.formatDate(emp.appointmentDate));
+        this.setElementText('empDateOfAppointment', this.formatDate(emp.appointmentDate || emp.dateOfAppointment));
         this.setElementText('empYearsOfService', yearsOfService);
-        this.setElementText('empDateOfAssumption', this.formatDate(emp.assumptionDate));
+        this.setElementText('empDateOfAssumption', this.formatDate(emp.assumptionDate || emp.dateOfAssumption));
         this.setElementText('empDesignation', emp.designation);
         this.setElementText('empDepartment', emp.department);
-        this.setElementText('empSsnitNumber', emp.ssnitNumber);
+        this.setElementText('empSsnitNumber', emp.ssnitNumber || emp.ssnit);
         this.setElementText('empTinNumber', emp.tinNumber);
         this.setElementText('empEmploymentType', emp.employmentType);
         
@@ -206,7 +217,7 @@ const EmployeeView = {
         const printContent = modalContent.cloneNode(true);
         
         // Remove buttons from print
-        printContent.querySelectorAll('.modal-footer, .close, .btn, .modal-header .close').forEach(el => {
+        printContent.querySelectorAll('.modal-footer, .close, .btn').forEach(el => {
             if(el) el.remove();
         });
         
@@ -251,6 +262,8 @@ const EmployeeView = {
         if(modal) {
             modal.style.display = 'none';
         }
+        // Return to employee list
+        Router.navigate('employee-list');
     }
 };
 
