@@ -7,11 +7,11 @@ const Router = {
     
     routes: {
         'dashboard': {
-        title: 'Dashboard',
-        html: 'pages/dashboard.html',
-        css: ['css/dashboard.css'],
-        js: ['js/dashboard.js']
-    },
+            title: 'Dashboard',
+            html: 'pages/dashboard.html',
+            css: ['css/dashboard.css'],
+            js: ['js/dashboard.js']
+        },
         'employee-list': {
             title: 'Employee List',
             html: 'pages/employee/list.html',
@@ -125,7 +125,7 @@ const Router = {
             // Load HTML
             const htmlResponse = await fetch(route.html);
             if (!htmlResponse.ok) {
-                throw new Error(`Failed to load ${route.html}`);
+                throw new Error(`Failed to load ${route.html}: ${htmlResponse.status} ${htmlResponse.statusText}`);
             }
             const html = await htmlResponse.text();
             contentArea.innerHTML = html;
@@ -164,7 +164,7 @@ const Router = {
                     <span>Failed to load page: ${error.message}. Please refresh and try again.</span>
                 </div>
             `;
-            if (Utils) Utils.showToast('Failed to load page', 'error');
+            if (Utils) Utils.showToast('Failed to load page: ' + error.message, 'error');
         } finally {
             const loader = document.getElementById('loader');
             if (loader) loader.style.display = 'none';
@@ -222,7 +222,8 @@ const Router = {
         const parts = page.split('-');
         if (parts[0] === 'employee') {
             if (parts[1] === 'list') return 'EmployeeList';
-            if (parts[1] === 'add' || parts[1] === 'edit') return 'Employee';
+            if (parts[1] === 'add') return 'Employee';
+            if (parts[1] === 'edit') return 'Employee';
             if (parts[1] === 'view') return 'EmployeeView';
             if (parts[1] === 'documents') return 'EmployeeDocuments';
         }
