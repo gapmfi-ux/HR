@@ -2,6 +2,7 @@
 const EmployeeView = {
     employeeNumber: null,
     employeeData: null,
+    currentTab: 'personal',
     
     init: async function(params = {}) {
         console.log('EmployeeView init:', params);
@@ -68,7 +69,6 @@ const EmployeeView = {
             const modal = document.getElementById('summaryModal');
             if(modal) {
                 modal.classList.add('active');
-                modal.style.display = 'flex';
             }
         } catch(e) {
             console.error('Error loading modal:', e);
@@ -84,20 +84,32 @@ const EmployeeView = {
         const age = this.calculateAge(emp.dob);
         const yearsOfService = this.calculateYearsOfService(emp.appointmentDate);
         
-        // Employee Information
-        this.setElementText('empNum', emp.employeeNumber);
-        this.setElementText('empStatus', emp.status || 'Active');
-        this.setStatusBadge(emp.status);
+        // Header/Badge
+        const statusBadge = document.getElementById('empStatusBadge');
+        if(statusBadge) {
+            const isActive = emp.status === 'Active';
+            statusBadge.textContent = emp.status || 'Active';
+            statusBadge.style.background = isActive ? '#dcfce7' : '#fee2e2';
+            statusBadge.style.color = isActive ? '#166534' : '#991b1b';
+        }
         
-        // Personal Details
+        // Profile Section
         this.setElementText('empName', emp.name);
-        this.setElementText('empSex', emp.sex);
-        this.setElementText('empDob', this.formatDate(emp.dob));
+        this.setElementText('empDesignation', emp.designation);
+        this.setElementText('empDepartment', emp.department || '-');
+        this.setElementText('empNum', emp.employeeNumber);
         this.setElementText('empAge', age);
-        this.setElementText('empPlaceOfBirth', emp.placeOfBirth);
+        this.setElementText('empYearsOfService', yearsOfService);
+        
+        // Personal Tab
+        this.setElementText('empNameFull', emp.name);
+        this.setElementText('empSex', emp.sex);
         this.setElementText('empNationality', emp.nationality);
         this.setElementText('empIdType', emp.idType);
         this.setElementText('empIdNumber', emp.idNumber);
+        this.setElementText('empDob', this.formatDate(emp.dob));
+        this.setElementText('empAgeDetail', age);
+        this.setElementText('empPlaceOfBirth', emp.placeOfBirth);
         this.setElementText('empContactTelephone', emp.contactTelephone || emp.contactNumber);
         this.setElementText('empEmail', emp.email || 'N/A');
         this.setElementText('empPlaceOfResidence', emp.residence);
@@ -113,38 +125,42 @@ const EmployeeView = {
         this.setElementText('empKinContact', emp.kinContact);
         this.setElementText('empKinResidence', emp.kinResidence);
         
-        // Employment Details
+        // Employment Tab
+        this.setElementText('empDesignationDetail', emp.designation);
+        this.setElementText('empDepartmentDetail', emp.department);
+        this.setElementText('empEmploymentType', emp.employmentType);
         this.setElementText('empDateOfAppointment', this.formatDate(emp.appointmentDate || emp.dateOfAppointment));
-        this.setElementText('empYearsOfService', yearsOfService);
         this.setElementText('empDateOfAssumption', this.formatDate(emp.assumptionDate || emp.dateOfAssumption));
-        this.setElementText('empDesignation', emp.designation);
-        this.setElementText('empDepartment', emp.department);
+        this.setElementText('empYearsOfServiceDetail', yearsOfService);
         this.setElementText('empSsnitNumber', emp.ssnitNumber || emp.ssnit);
         this.setElementText('empTinNumber', emp.tinNumber);
-        this.setElementText('empEmploymentType', emp.employmentType);
         
-        // Education - Secondary
+        // Education Tab
         this.setElementText('secInstitution', emp.secondaryInstitution);
         this.setElementText('secMajor', emp.secondaryMajor);
         this.setElementText('secYear', emp.secondaryYear);
-        
-        // Education - Tertiary
         this.setElementText('terInstitution', emp.tertiaryInstitution);
         this.setElementText('terMajor', emp.tertiaryMajor);
         this.setElementText('terYear', emp.tertiaryYear);
-        
-        // Education - Professional
         this.setElementText('profInstitution', emp.professionalInstitution);
         this.setElementText('profMajor', emp.professionalMajor);
         this.setElementText('profYear', emp.professionalYear);
         
-        // Guarantor 1
+        // Family Tab
+        this.setElementText('empMaritalStatusFamily', emp.maritalStatus);
+        this.setElementText('empSpouseNameFamily', emp.spouseName);
+        this.setElementText('empChildrenFamily', emp.childrenCount || '0');
+        this.setElementText('empFatherNameFamily', emp.fatherName);
+        this.setElementText('empMotherNameFamily', emp.motherName);
+        this.setElementText('empNextOfKinFamily', emp.nextOfKin);
+        this.setElementText('empKinContactFamily', emp.kinContact);
+        this.setElementText('empKinResidenceFamily', emp.kinResidence);
+        
+        // Guarantor Tab
         this.setElementText('guarantor1Name', emp.guarantor1Name);
         this.setElementText('guarantor1Contact', emp.guarantor1Contact);
         this.setElementText('guarantor1Address', emp.guarantor1Address);
         this.setElementText('guarantor1Email', emp.guarantor1Email);
-        
-        // Guarantor 2
         this.setElementText('guarantor2Name', emp.guarantor2Name);
         this.setElementText('guarantor2Contact', emp.guarantor2Contact);
         this.setElementText('guarantor2Address', emp.guarantor2Address);
@@ -154,22 +170,12 @@ const EmployeeView = {
     setElementText: function(id, value) {
         const element = document.getElementById(id);
         if(element) {
-            element.textContent = value || 'N/A';
-        }
-    },
-    
-    setStatusBadge: function(status) {
-        const element = document.getElementById('empStatus');
-        if(element) {
-            const isActive = status === 'Active';
-            element.className = `status-badge ${isActive ? 'status-active' : 'status-inactive'}`;
-            element.textContent = status || 'Active';
+            element.textContent = value || '-';
         }
     },
     
     /**
      * Calculate age from date of birth (FRONTEND VERSION)
-     * No longer depends on backend functions
      */
     calculateAge: function(dob) {
         if(!dob) return 'N/A';
@@ -195,7 +201,6 @@ const EmployeeView = {
     
     /**
      * Calculate years of service from appointment date (FRONTEND VERSION)
-     * No longer depends on backend functions
      */
     calculateYearsOfService: function(startDate) {
         if(!startDate) return 'N/A';
@@ -238,6 +243,19 @@ const EmployeeView = {
     },
     
     setupEventListeners: function() {
+        // Tab switching
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        if(tabButtons) {
+            tabButtons.forEach(btn => {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    const tabName = btn.dataset.tab;
+                    this.switchTab(tabName);
+                };
+            });
+        }
+        
+        // Edit button
         const editBtn = document.getElementById('editEmployeeFromModal');
         if(editBtn) {
             editBtn.onclick = () => {
@@ -256,12 +274,20 @@ const EmployeeView = {
                 }
             };
         }
+    },
+    
+    switchTab: function(tabName) {
+        // Update active tab button
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
         
-        // Close button
-        const closeBtn = document.querySelector('.modal-close');
-        if(closeBtn) {
-            closeBtn.onclick = () => this.close();
-        }
+        // Update active tab pane
+        document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.toggle('active', pane.id === `tab-${tabName}`);
+        });
+        
+        this.currentTab = tabName;
     },
     
     print: function() {
@@ -270,8 +296,8 @@ const EmployeeView = {
         
         const printContent = modalContent.cloneNode(true);
         
-        // Remove buttons from print
-        printContent.querySelectorAll('.modal-footer, .close, .btn').forEach(el => {
+        // Remove buttons and unnecessary elements
+        printContent.querySelectorAll('.modal-footer, .modal-close, .btn').forEach(el => {
             if(el) el.remove();
         });
         
@@ -284,38 +310,45 @@ const EmployeeView = {
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
-                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px; background: white; }
+                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px 20px; background: white; }
                     .modal-content { max-width: 900px; margin: 0 auto; }
-                    .section { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; }
-                    .section-header { background: #f5f5f5; padding: 10px 16px; border-bottom: 1px solid #ddd; }
-                    .section-body { padding: 16px; }
-                    .info-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 10px; }
-                    .info-row p { flex: 1; min-width: 200px; }
-                    .info-row strong { display: inline-block; width: 130px; }
-                    .guarantor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-                    .guarantor { background: #f9f9f9; padding: 12px; border-radius: 8px; }
-                    .status-active { color: green; }
-                    .status-inactive { color: red; }
+                    .modal-header { padding: 20px; border-bottom: 2px solid #3b82f6; margin-bottom: 20px; }
+                    .modal-title { font-size: 20px; font-weight: 700; margin: 0; }
+                    .profile-section { padding: 20px; background: #f8fafc; margin-bottom: 20px; border-radius: 8px; }
+                    .profile-name { font-size: 18px; font-weight: 600; }
+                    .profile-designation { font-size: 14px; color: #64748b; }
+                    .modal-tabs { display: none; }
+                    .modal-body { padding: 0; }
+                    .tab-pane { display: block !important; page-break-inside: avoid; }
+                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+                    .info-card { padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
+                    .info-card h4 { font-size: 13px; font-weight: 600; margin: 0 0 10px 0; }
+                    .info-item { margin-bottom: 8px; }
+                    .info-item .label { font-size: 11px; color: #64748b; font-weight: 600; }
+                    .info-item .value { font-size: 12px; color: #1e293b; }
+                    .guarantor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                    .guarantor-card { padding: 15px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
+                    .guarantor-card h4 { font-size: 13px; font-weight: 600; margin: 0 0 10px 0; }
                     @media print {
-                        body { padding: 20px; }
-                        .section { break-inside: avoid; }
+                        body { padding: 0; }
+                        .info-grid, .guarantor-grid { grid-template-columns: 1fr; }
+                        .tab-pane { page-break-inside: avoid; }
                     }
                 </style>
             </head>
             <body>
                 ${printContent.outerHTML}
-                <script>window.onload = () => window.print();<\/script>
             </body>
             </html>
         `);
         printWindow.document.close();
+        setTimeout(() => printWindow.print(), 250);
     },
     
     close: function() {
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.classList.remove('active');
-            modal.style.display = 'none';
         }
         // Return to employee list
         Router.navigate('employee-list');
