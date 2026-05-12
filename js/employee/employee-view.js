@@ -20,7 +20,7 @@ const EmployeeView = {
         try {
             await this.loadEmployeeData();
             Utils.hideLoading();
-            this.showModal();
+            await this.loadAndShowModal();
             this.setupEventListeners();
         } catch(e) {
             Utils.hideLoading();
@@ -42,25 +42,15 @@ const EmployeeView = {
         return result;
     },
     
-    showModal: function() {
-        let modal = document.getElementById('summaryModal');
-        
-        if(!modal) {
-            this.loadModalHTML();
-        } else {
-            this.populateModal();
-            modal.classList.add('active');
-            modal.style.display = 'flex';
-        }
-    },
-    
-    loadModalHTML: async function() {
+    loadAndShowModal: async function() {
         try {
+            // Load modal HTML
             const response = await fetch('pages/employee/view.html');
             if(!response.ok) throw new Error('Failed to load view.html');
             
             const html = await response.text();
             
+            // Get or create modal container
             let modalContainer = document.getElementById('modalContainer');
             if(!modalContainer) {
                 modalContainer = document.createElement('div');
@@ -68,13 +58,16 @@ const EmployeeView = {
                 document.body.appendChild(modalContainer);
             }
             
+            // Insert modal HTML
             modalContainer.innerHTML = html;
+            
+            // Populate modal data
             this.populateModal();
             
+            // Show modal
             const modal = document.getElementById('summaryModal');
             if(modal) {
                 modal.classList.add('active');
-                modal.style.display = 'flex';
             }
         } catch(e) {
             console.error('Error loading modal HTML:', e);
@@ -281,7 +274,6 @@ const EmployeeView = {
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.classList.remove('active');
-            modal.style.display = 'none';
         }
         // Return to employee list
         Router.navigate('employee-list');
