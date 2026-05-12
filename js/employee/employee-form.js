@@ -2,12 +2,30 @@ const Employee = {
     currentTab: 0,
     tabs: ['personal', 'employment', 'education', 'guarantor', 'documents'],
     employeeNumber: null,
+    isEditMode: false,
     
     init: async function(params = {}) {
         this.setupTabs();
-        await this.generateNumber();
-        if(params.id) await this.loadData(params.id);
+        
+        // Check if we're in edit mode
+        if(params.id) {
+            this.isEditMode = true;
+            this.employeeNumber = params.id;
+            await this.loadData(params.id);
+            this.updateFormTitle();
+        } else {
+            this.isEditMode = false;
+            await this.generateNumber();
+        }
+        
         this.setupUpload();
+    },
+    
+    updateFormTitle: function() {
+        const submitBtn = document.getElementById('submitBtn');
+        if(submitBtn) {
+            submitBtn.textContent = '✓ Update';
+        }
     },
     
     setupTabs: function() {
@@ -25,8 +43,13 @@ const Employee = {
         this.updateButtons();
     },
     
-    nextTab: function() { if(this.currentTab < this.tabs.length - 1) this.switchTab(this.currentTab + 1); },
-    prevTab: function() { if(this.currentTab > 0) this.switchTab(this.currentTab - 1); },
+    nextTab: function() { 
+        if(this.currentTab < this.tabs.length - 1) this.switchTab(this.currentTab + 1); 
+    },
+    
+    prevTab: function() { 
+        if(this.currentTab > 0) this.switchTab(this.currentTab - 1); 
+    },
     
     updateButtons: function() {
         const isLast = this.currentTab === this.tabs.length - 1;
@@ -42,13 +65,78 @@ const Employee = {
     },
     
     loadData: async function(empNum) {
-        const data = await API.getEmployeeById(empNum);
-        if(!data.error) this.populateForm(data);
+        Utils.showLoading();
+        try {
+            const data = await API.getEmployeeById(empNum);
+            Utils.hideLoading();
+            
+            if(!data.error) {
+                this.populateForm(data);
+            } else {
+                Utils.showToast('Error loading employee data: ' + data.error, 'error');
+            }
+        } catch(e) {
+            Utils.hideLoading();
+            Utils.showToast('Error loading employee data', 'error');
+            console.error(e);
+        }
     },
     
     populateForm: function(data) {
-        const fields = ['employeeNumber','employeeName','sex','nationality','idType','idNumber','dob','placeOfBirth','contactNumber','residence','digitalAddress','landmark','residenceType','maritalStatus','spouseName','childrenCount','fatherName','motherName','nextOfKin','kinContact','kinResidence','dateOfAppointment','assumptionDate','designation','ssnit','tinNumber','employmentType','department','secondaryInstitution','secondaryMajor','secondaryYear','tertiaryInstitution','tertiaryMajor','tertiaryYear','professionalInstitution','professionalMajor','professionalYear','guarantor1Name','guarantor1Contact','guarantor1Address','guarantor1Email','guarantor2Name','guarantor2Contact','guarantor2Address','guarantor2Email'];
-        fields.forEach(f => { const el = document.getElementById(f); if(el && data[f]) el.value = data[f]; });
+        const fieldMappings = {
+            'employeeNumber': 'employeeNumber',
+            'employeeName': 'name',
+            'sex': 'sex',
+            'nationality': 'nationality',
+            'idType': 'idType',
+            'idNumber': 'idNumber',
+            'dob': 'dob',
+            'placeOfBirth': 'placeOfBirth',
+            'contactNumber': 'contactTelephone',
+            'residence': 'residence',
+            'digitalAddress': 'digitalAddress',
+            'landmark': 'landmark',
+            'residenceType': 'residenceType',
+            'maritalStatus': 'maritalStatus',
+            'spouseName': 'spouseName',
+            'childrenCount': 'childrenCount',
+            'fatherName': 'fatherName',
+            'motherName': 'motherName',
+            'nextOfKin': 'nextOfKin',
+            'kinContact': 'kinContact',
+            'kinResidence': 'kinResidence',
+            'dateOfAppointment': 'appointmentDate',
+            'assumptionDate': 'assumptionDate',
+            'designation': 'designation',
+            'department': 'department',
+            'employmentType': 'employmentType',
+            'ssnit': 'ssnitNumber',
+            'tinNumber': 'tinNumber',
+            'secondaryInstitution': 'secondaryInstitution',
+            'secondaryMajor': 'secondaryMajor',
+            'secondaryYear': 'secondaryYear',
+            'tertiaryInstitution': 'tertiaryInstitution',
+            'tertiaryMajor': 'tertiaryMajor',
+            'tertiaryYear': 'tertiaryYear',
+            'professionalInstitution': 'professionalInstitution',
+            'professionalMajor': 'professionalMajor',
+            'professionalYear': 'professionalYear',
+            'guarantor1Name': 'guarantor1Name',
+            'guarantor1Contact': 'guarantor1Contact',
+            'guarantor1Address': 'guarantor1Address',
+            'guarantor1Email': 'guarantor1Email',
+            'guarantor2Name': 'guarantor2Name',
+            'guarantor2Contact': 'guarantor2Contact',
+            'guarantor2Address': 'guarantor2Address',
+            'guarantor2Email': 'guarantor2Email'
+        };
+        
+        Object.entries(fieldMappings).forEach(([fieldId, dataKey]) => {
+            const el = document.getElementById(fieldId);
+            if(el && data[dataKey]) {
+                el.value = data[dataKey];
+            }
+        });
     },
     
     setupUpload: function() {
@@ -61,6 +149,7 @@ const Employee = {
     uploadDoc: async function() {
         const file = document.getElementById('docFile').files[0];
         if(!file) return Utils.showToast('Select a file', 'error');
+        
         const reader = new FileReader();
         reader.onload = async (e) => {
             const result = await API.uploadDocument({
@@ -70,23 +159,57 @@ const Employee = {
                 fileContent: e.target.result.split(',')[1],
                 mimeType: file.type
             });
-            if(result.success) Utils.showToast('Uploaded', 'success');
-            else Utils.showToast('Failed', 'error');
+            if(result.success) Utils.showToast('Document uploaded successfully', 'success');
+            else Utils.showToast('Document upload failed', 'error');
         };
         reader.readAsDataURL(file);
     },
     
     submit: async function() {
+        // Collect form data
         const data = {};
-        const fields = ['employeeName','sex','nationality','idType','idNumber','dob','placeOfBirth','contactNumber','residence','digitalAddress','landmark','residenceType','maritalStatus','spouseName','childrenCount','fatherName','motherName','nextOfKin','kinContact','kinResidence','dateOfAppointment','assumptionDate','designation','ssnit','tinNumber','employmentType','department','secondaryInstitution','secondaryMajor','secondaryYear','tertiaryInstitution','tertiaryMajor','tertiaryYear','professionalInstitution','professionalMajor','professionalYear','guarantor1Name','guarantor1Contact','guarantor1Address','guarantor1Email','guarantor2Name','guarantor2Contact','guarantor2Address','guarantor2Email'];
-        fields.forEach(f => { const el = document.getElementById(f); if(el) data[f] = el.value; });
+        const fields = [
+            'employeeName','sex','nationality','idType','idNumber','dob','placeOfBirth','contactNumber',
+            'residence','digitalAddress','landmark','residenceType','maritalStatus','spouseName','childrenCount',
+            'fatherName','motherName','nextOfKin','kinContact','kinResidence','dateOfAppointment','assumptionDate',
+            'designation','ssnit','tinNumber','employmentType','department','secondaryInstitution','secondaryMajor',
+            'secondaryYear','tertiaryInstitution','tertiaryMajor','tertiaryYear','professionalInstitution',
+            'professionalMajor','professionalYear','guarantor1Name','guarantor1Contact','guarantor1Address',
+            'guarantor1Email','guarantor2Name','guarantor2Contact','guarantor2Address','guarantor2Email'
+        ];
+        
+        fields.forEach(f => { 
+            const el = document.getElementById(f); 
+            if(el) data[f] = el.value; 
+        });
+        
         data.employeeNumber = this.employeeNumber;
         
-        const result = await API.saveEmployee(data);
-        if(result.success) {
-            Utils.showToast('Saved!', 'success');
-            setTimeout(() => Router.navigate('employee-list'), 1500);
-        } else Utils.showToast(result.error || 'Failed', 'error');
+        Utils.showLoading();
+        
+        try {
+            let result;
+            if(this.isEditMode) {
+                result = await API.updateEmployee(data);
+            } else {
+                result = await API.saveEmployee(data);
+            }
+            
+            Utils.hideLoading();
+            
+            if(result.success) {
+                const message = this.isEditMode ? 'Employee updated successfully!' : 'Employee added successfully!';
+                Utils.showToast(message, 'success');
+                setTimeout(() => Router.navigate('employee-list'), 1500);
+            } else {
+                Utils.showToast(result.error || 'Failed to save employee', 'error');
+            }
+        } catch(e) {
+            Utils.hideLoading();
+            Utils.showToast('Error saving employee: ' + e.message, 'error');
+            console.error(e);
+        }
     }
 };
+
 window.Employee = Employee;
