@@ -1,3 +1,4 @@
+// js/employee/employee-view.js
 const EmployeeView = {
     employeeNumber: null,
     employeeData: null,
@@ -24,6 +25,7 @@ const EmployeeView = {
         } catch(e) {
             Utils.hideLoading();
             Utils.showToast('Failed to load employee details', 'error');
+            console.error('Error loading employee:', e);
             Router.navigate('employee-list');
         }
     },
@@ -47,26 +49,37 @@ const EmployeeView = {
             this.loadModalHTML();
         } else {
             this.populateModal();
+            modal.classList.add('active');
             modal.style.display = 'flex';
         }
     },
     
     loadModalHTML: async function() {
-        const response = await fetch('pages/employee/view.html');
-        const html = await response.text();
-        
-        let modalContainer = document.getElementById('modalContainer');
-        if(!modalContainer) {
-            modalContainer = document.createElement('div');
-            modalContainer.id = 'modalContainer';
-            document.body.appendChild(modalContainer);
+        try {
+            const response = await fetch('pages/employee/view.html');
+            if(!response.ok) throw new Error('Failed to load view.html');
+            
+            const html = await response.text();
+            
+            let modalContainer = document.getElementById('modalContainer');
+            if(!modalContainer) {
+                modalContainer = document.createElement('div');
+                modalContainer.id = 'modalContainer';
+                document.body.appendChild(modalContainer);
+            }
+            
+            modalContainer.innerHTML = html;
+            this.populateModal();
+            
+            const modal = document.getElementById('summaryModal');
+            if(modal) {
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            }
+        } catch(e) {
+            console.error('Error loading modal HTML:', e);
+            throw e;
         }
-        
-        modalContainer.innerHTML = html;
-        this.populateModal();
-        
-        const modal = document.getElementById('summaryModal');
-        if(modal) modal.style.display = 'flex';
     },
     
     populateModal: function() {
@@ -199,14 +212,21 @@ const EmployeeView = {
             };
         }
         
-        // Close modal when clicking outside
+        // Close modal when clicking outside (on the dark overlay)
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.onclick = (e) => {
+                // Only close if clicking directly on the modal background, not on modal-content
                 if(e.target === modal) {
                     this.close();
                 }
             };
+        }
+        
+        // Close button
+        const closeBtn = document.querySelector('.modal-close');
+        if(closeBtn) {
+            closeBtn.onclick = () => this.close();
         }
     },
     
@@ -260,6 +280,7 @@ const EmployeeView = {
     close: function() {
         const modal = document.getElementById('summaryModal');
         if(modal) {
+            modal.classList.remove('active');
             modal.style.display = 'none';
         }
         // Return to employee list
