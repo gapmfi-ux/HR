@@ -58,19 +58,20 @@ const EmployeeView = {
                 document.body.appendChild(modalContainer);
             }
             
-            // Insert modal HTML
+            // Insert HTML
             modalContainer.innerHTML = html;
             
-            // Populate modal data
+            // Populate modal with data
             this.populateModal();
             
             // Show modal
             const modal = document.getElementById('summaryModal');
             if(modal) {
                 modal.classList.add('active');
+                modal.style.display = 'flex';
             }
         } catch(e) {
-            console.error('Error loading modal HTML:', e);
+            console.error('Error loading modal:', e);
             throw e;
         }
     },
@@ -79,7 +80,7 @@ const EmployeeView = {
         const emp = this.employeeData;
         if(!emp) return;
         
-        // Calculate age and years of service
+        // Calculate age and years of service using FRONTEND functions
         const age = this.calculateAge(emp.dob);
         const yearsOfService = this.calculateYearsOfService(emp.appointmentDate);
         
@@ -166,34 +167,74 @@ const EmployeeView = {
         }
     },
     
+    /**
+     * Calculate age from date of birth (FRONTEND VERSION)
+     * No longer depends on backend functions
+     */
     calculateAge: function(dob) {
         if(!dob) return 'N/A';
-        const birthDate = new Date(dob);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if(m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-        return age + ' years';
+        
+        try {
+            const birthDate = new Date(dob);
+            if(isNaN(birthDate.getTime())) return 'N/A';
+            
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            
+            if(m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age < 0 ? 'N/A' : age + ' years';
+        } catch(e) {
+            console.error('Error calculating age:', e);
+            return 'N/A';
+        }
     },
     
+    /**
+     * Calculate years of service from appointment date (FRONTEND VERSION)
+     * No longer depends on backend functions
+     */
     calculateYearsOfService: function(startDate) {
         if(!startDate) return 'N/A';
-        const start = new Date(startDate);
-        const today = new Date();
-        let years = today.getFullYear() - start.getFullYear();
-        const m = today.getMonth() - start.getMonth();
-        if(m < 0 || (m === 0 && today.getDate() < start.getDate())) years--;
-        return years + ' year(s)';
+        
+        try {
+            const start = new Date(startDate);
+            if(isNaN(start.getTime())) return 'N/A';
+            
+            const today = new Date();
+            let years = today.getFullYear() - start.getFullYear();
+            const m = today.getMonth() - start.getMonth();
+            
+            if(m < 0 || (m === 0 && today.getDate() < start.getDate())) {
+                years--;
+            }
+            
+            return years < 0 ? 'N/A' : years + ' year(s)';
+        } catch(e) {
+            console.error('Error calculating years of service:', e);
+            return 'N/A';
+        }
     },
     
     formatDate: function(dateString) {
         if(!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        
+        try {
+            const date = new Date(dateString);
+            if(isNaN(date.getTime())) return 'N/A';
+            
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch(e) {
+            console.error('Error formatting date:', e);
+            return 'N/A';
+        }
     },
     
     setupEventListeners: function() {
@@ -209,7 +250,7 @@ const EmployeeView = {
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.onclick = (e) => {
-                // Only close if clicking directly on the modal background, not on modal-content
+                // Only close if clicking directly on the modal background
                 if(e.target === modal) {
                     this.close();
                 }
@@ -263,7 +304,7 @@ const EmployeeView = {
             </head>
             <body>
                 ${printContent.outerHTML}
-                <script>window.onload = () => window.print();<\\/script>
+                <script>window.onload = () => window.print();<\/script>
             </body>
             </html>
         `);
@@ -274,6 +315,7 @@ const EmployeeView = {
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.classList.remove('active');
+            modal.style.display = 'none';
         }
         // Return to employee list
         Router.navigate('employee-list');
