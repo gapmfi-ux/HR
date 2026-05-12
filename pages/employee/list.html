@@ -1,5 +1,29 @@
 <div class="list-page">
-    <div class="list-header"><h2>Employees</h2><button class="btn btn-primary" onclick="Router.navigate('employee-add')"><i class="fas fa-plus"></i> Add</button></div>
-    <div class="search-bar"><input type="text" id="searchInput" placeholder="Search..."><select id="statusFilter"><option value="all">All</option><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
-    <div id="employeeTableContainer"><div class="loader-small">Loading...</div></div>
+    <div class="search-filter-container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search by name or staff number...">
+        </div>
+        <div class="filter-controls">
+            <select id="statusFilter" class="filter-select">
+                <option value="all">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+            <select id="departmentFilter" class="filter-select">
+                <option value="all">All Departments</option>
+                <option value="HR">HR</option>
+                <option value="IT">IT</option>
+                <option value="Finance">Finance</option>
+                <option value="Operations">Operations</option>
+                <option value="Sales">Sales</option>
+            </select>
+            <select id="designationFilter" class="filter-select">
+                <option value="all">All Designations</option>
+            </select>
+        </div>
+    </div>
+    
+    <div id="employeeTableContainer">
+        <div class="loader-small">Loading employees...</div>
+    </div>
 </div>
