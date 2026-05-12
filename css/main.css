@@ -100,9 +100,11 @@ body {
     padding: 16px 12px;
 }
 
-/* Nav Section Styles */
+/* ========================================
+   NAV SECTION STYLES - IMPROVED & FIXED
+   ======================================== */
 .nav-section {
-    margin-bottom: 20px;
+    margin-bottom: 4px;
 }
 
 .nav-section-title {
@@ -116,8 +118,9 @@ body {
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
     border-radius: 6px;
+    user-select: none;
 }
 
 .nav-section-title:hover {
@@ -127,26 +130,36 @@ body {
 
 .nav-section-title i {
     font-size: 12px;
-    transition: transform 0.2s;
+    transition: transform 0.3s ease;
+    margin-left: auto;
 }
 
-/* Collapsed state - hide content, rotate arrow */
+/* ========== COLLAPSED STATE - Hide content and rotate arrow down ========== */
 .nav-section.collapsed .nav-section-title i {
     transform: rotate(-90deg);
 }
 
 .nav-section.collapsed .nav-section-content {
-    display: none;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
 }
 
-/* Expanded state - show content */
+/* ========== EXPANDED STATE - Show content and rotate arrow normal ========== */
+.nav-section:not(.collapsed) .nav-section-title i {
+    transform: rotate(0deg);
+}
+
 .nav-section:not(.collapsed) .nav-section-content {
-    display: block;
+    max-height: 600px;
+    opacity: 1;
 }
 
+/* Smooth transition for content */
 .nav-section-content {
-    margin-top: 4px;
-    display: block;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                opacity 0.3s ease;
+    overflow: hidden;
 }
 
 .nav-item {
@@ -195,8 +208,13 @@ body {
     font-size: 8px;
 }
 
-.api-status.online i { color: var(--success); }
-.api-status.offline i { color: var(--danger); }
+.api-status.online i { 
+    color: var(--success); 
+}
+
+.api-status.offline i { 
+    color: var(--danger); 
+}
 
 .user-info-sidebar {
     display: flex;
@@ -342,23 +360,41 @@ body {
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
+        width: 280px;
     }
+    
     .sidebar.mobile-open {
         transform: translateX(0);
+        box-shadow: 4px 0 12px rgba(0,0,0,0.3);
     }
+    
     .sidebar-close {
         display: block;
     }
+    
     .main-content {
         margin-left: 0;
     }
+    
     .mobile-menu-toggle {
         display: block;
     }
+    
     .content-area {
         padding: 16px;
     }
+    
     .header-left h1 {
         font-size: 18px;
+    }
+    
+    /* Adjust nav sections on mobile */
+    .nav-section-title {
+        padding: 10px 12px;
+    }
+    
+    .nav-item {
+        padding: 10px 12px;
+        font-size: 14px;
     }
 }
