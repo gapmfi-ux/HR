@@ -1,6 +1,3 @@
-/* employee-view.css - With Highlighted Values & Internal Scroll Only */
-
-/* Modal Overlay - Fixes the screen, main page does NOT scroll */
 .modal {
   position: fixed;
   top: 0;
