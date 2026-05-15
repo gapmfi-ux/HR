@@ -1,5 +1,3 @@
-/* employee-view.css - Modal scrolls with main page (NO internal scroll) */
-
 /* Modal Overlay - Fixes position, allows page scroll */
 .modal {
   position: fixed;
