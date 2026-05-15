@@ -23,35 +23,45 @@
 .modal-lg {
   max-width: 900px;
   width: 100%;
+  margin: 0 auto;
 }
 
 .modal-content {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+  overflow: visible;
+  width: 100%;
 }
 
-/* Modal Header - Centered Title */
+/* Modal Header - Centered */
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  text-align: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 16px 16px 0 0;
+  position: relative;
 }
 
 .modal-title {
   font-size: 18px;
-  font-weight: 600;
-  color: white;
+  font-weight: 700;
+  color: #1e293b;
   margin: 0;
   text-align: center;
-  flex: 1;
-  letter-spacing: 1px;
+}
+
+.modal-title i {
+  color: #3b82f6;
+  margin-right: 8px;
 }
 
 .modal-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 24px;
   font-weight: bold;
   color: #94a3b8;
@@ -68,187 +78,141 @@
 }
 
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f1f5f9;
   color: #ef4444;
 }
 
-/* Modal Body - No Scroll */
+/* Modal Body */
 .modal-body {
   padding: 16px 20px;
   background: #ffffff;
+  overflow: visible;
 }
 
-.modal-footer {
-  padding: 12px 20px;
-  border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-/* ============================================
-   EMPLOYEE HEADER CARD
-   ============================================ */
-.employee-header {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+/* Employee Header Card - Compact */
+.employee-header-card {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  border: 1px solid #e2e8f0;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.emp-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.employee-name-large {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 10px;
 }
 
-.emp-avatar {
-  width: 48px;
-  height: 48px;
-  background: #3b82f6;
-  border-radius: 50%;
+.employee-meta-row {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.emp-avatar i {
-  font-size: 28px;
-  color: white;
-}
-
-.emp-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 4px 0;
-}
-
-.emp-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-.meta-badge {
-  font-size: 11px;
-  background: #e2e8f0;
-  padding: 2px 8px;
-  border-radius: 20px;
-  color: #475569;
-}
-
-.meta-badge i {
-  margin-right: 4px;
-  font-size: 10px;
-}
-
-.emp-stats {
-  display: flex;
-  gap: 16px;
-}
-
-.stat-item {
-  text-align: center;
-  background: white;
+.meta-chip {
+  background: rgba(255, 255, 255, 0.2);
   padding: 4px 12px;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
+  border-radius: 30px;
+  font-size: 12px;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.stat-label {
-  font-size: 10px;
-  color: #64748b;
-  display: block;
+.meta-chip i {
+  font-size: 11px;
 }
 
-.stat-value {
-  font-size: 13px;
-  font-weight: 700;
-  color: #3b82f6;
-}
-
-/* ============================================
-   COMPACT SECTIONS
-   ============================================ */
-.compact-section {
+/* Sections - Compact */
+.section.compact {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   overflow: hidden;
 }
 
-.section-title {
+.section-header.compact {
   background: #f8fafc;
   padding: 8px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #1e293b;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.section-title i {
+.section-header.compact h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.section-header.compact h3 i {
   color: #3b82f6;
   margin-right: 6px;
   font-size: 12px;
 }
 
-/* Compact Grid */
-.compact-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 6px 12px;
-  padding: 10px 14px;
+.section-body.compact {
+  padding: 12px 14px;
 }
 
-.compact-grid.two-col {
+/* Info Grid - Compact */
+.info-grid.compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px 16px;
+}
+
+.info-grid.compact.two-col {
   grid-template-columns: repeat(2, 1fr);
 }
 
-.compact-grid.three-col {
+.info-grid.compact.three-col {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.grid-item {
-  font-size: 12px;
+/* Info Items - Compact */
+.info-item {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  flex-wrap: wrap;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: none;
 }
 
-.grid-item.full-width {
-  grid-column: 1 / -1;
-}
-
-.item-label {
+.info-item .label {
+  font-weight: 600;
   color: #64748b;
-  font-weight: 500;
   font-size: 11px;
-  min-width: 70px;
+  min-width: 90px;
 }
 
-/* Highlighted Values */
-.highlight-value {
-  color: #1e293b !important;
-  font-weight: 600 !important;
+.info-item .value {
+  color: #1e293b;
+  font-weight: 500;
   font-size: 12px;
   word-break: break-word;
+}
+
+/* Highlight Values */
+.highlight-value {
+  color: #3b82f6 !important;
+  font-weight: 700 !important;
+  background: #eff6ff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-block;
 }
 
 /* Status Badge */
 .status-badge {
   display: inline-block;
-  padding: 2px 10px;
+  padding: 4px 12px;
   border-radius: 30px;
   font-size: 11px;
   font-weight: 600;
@@ -264,64 +228,77 @@
   color: #991b1b;
 }
 
-/* ============================================
-   GUARANTOR COMPACT
-   ============================================ */
-.guarantor-compact {
-  display: flex;
-  gap: 16px;
-  padding: 12px 14px;
+/* Education Groups - Compact */
+.education-group.compact {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.guarantor-box {
-  flex: 1;
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 10px 12px;
+.education-group.compact:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
-.guarantor-title {
-  font-size: 11px;
+.education-group.compact h4 {
+  font-size: 12px;
   font-weight: 600;
   color: #3b82f6;
-  margin-bottom: 8px;
-  padding-bottom: 4px;
+  margin: 0 0 8px 0;
+}
+
+/* Guarantor Grid - Compact */
+.guarantor-grid.compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.guarantor.compact {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.guarantor.compact h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.guarantor-grid {
+.guarantor.compact .info-item {
+  padding: 3px 0;
+}
+
+.guarantor.compact .info-item .label {
+  min-width: 70px;
+  font-size: 10px;
+}
+
+.guarantor.compact .info-item .value {
+  font-size: 11px;
+}
+
+/* Modal Footer - Compact */
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  justify-content: flex-end;
+  gap: 10px;
+  border-radius: 0 0 16px 16px;
 }
 
-.guarantor-grid span {
-  font-size: 11px;
-  line-height: 1.4;
-}
-
-.guarantor-grid strong {
-  color: #64748b;
-  font-weight: 500;
-  margin-right: 4px;
-}
-
-.guarantor-grid .highlight-value {
-  font-size: 11px;
-}
-
-/* Buttons */
-.btn {
+/* Buttons - Compact */
+.btn-sm {
   padding: 6px 16px;
-  border: none;
-  border-radius: 6px;
   font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  border-radius: 6px;
 }
 
 .btn-primary {
@@ -342,39 +319,66 @@
   background: #cbd5e1;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+.btn {
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .modal {
-    padding: 20px 12px;
+    padding: 16px;
+  }
+  
+  .info-grid.compact,
+  .info-grid.compact.two-col,
+  .info-grid.compact.three-col {
+    grid-template-columns: 1fr;
+  }
+  
+  .guarantor-grid.compact {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
   
   .modal-body {
     padding: 12px 14px;
   }
   
-  .compact-grid {
-    grid-template-columns: 1fr !important;
+  .employee-name-large {
+    font-size: 18px;
   }
   
-  .employee-header {
+  .info-item {
     flex-direction: column;
-    text-align: center;
+    gap: 2px;
   }
   
-  .emp-header-left {
-    flex-direction: column;
-    text-align: center;
+  .info-item .label {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-title {
+    font-size: 16px;
   }
   
-  .emp-stats {
-    justify-content: center;
+  .employee-header-card {
+    padding: 12px 16px;
   }
   
-  .guarantor-compact {
-    flex-direction: column;
-    gap: 10px;
+  .employee-name-large {
+    font-size: 16px;
+  }
+  
+  .section-body.compact {
+    padding: 10px 12px;
   }
   
   .modal-footer {
@@ -382,17 +386,8 @@
     gap: 8px;
   }
   
-  .btn {
+  .btn-sm {
     width: 100%;
     justify-content: center;
-  }
-  
-  .grid-item {
-    flex-direction: column;
-    gap: 2px;
-  }
-  
-  .item-label {
-    min-width: auto;
   }
 }
