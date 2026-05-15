@@ -1,4 +1,4 @@
-
+// js/employee/employee-view.js
 const EmployeeView = {
     employeeNumber: null,
     employeeData: null,
@@ -22,8 +22,7 @@ const EmployeeView = {
             Utils.hideLoading();
             await this.loadAndShowModal();
             this.setupEventListeners();
-            // Prevent body scroll when modal is open
-            document.body.classList.add('modal-open');
+            // Do NOT prevent body scroll - modal scrolls with page naturally
         } catch(e) {
             Utils.hideLoading();
             Utils.showToast('Failed to load employee details', 'error');
@@ -70,7 +69,6 @@ const EmployeeView = {
             const modal = document.getElementById('summaryModal');
             if(modal) {
                 modal.classList.add('active');
-                modal.style.display = 'flex';
             }
         } catch(e) {
             console.error('Error loading modal:', e);
@@ -170,70 +168,47 @@ const EmployeeView = {
         }
     },
     
-    /**
-     * Calculate age from date of birth
-     */
     calculateAge: function(dob) {
         if(!dob) return 'N/A';
-        
         try {
             const birthDate = new Date(dob);
             if(isNaN(birthDate.getTime())) return 'N/A';
-            
             const today = new Date();
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
-            
-            if(m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            
+            if(m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
             return age < 0 ? 'N/A' : age + ' years';
         } catch(e) {
-            console.error('Error calculating age:', e);
             return 'N/A';
         }
     },
     
-    /**
-     * Calculate years of service from appointment date
-     */
     calculateYearsOfService: function(startDate) {
         if(!startDate) return 'N/A';
-        
         try {
             const start = new Date(startDate);
             if(isNaN(start.getTime())) return 'N/A';
-            
             const today = new Date();
             let years = today.getFullYear() - start.getFullYear();
             const m = today.getMonth() - start.getMonth();
-            
-            if(m < 0 || (m === 0 && today.getDate() < start.getDate())) {
-                years--;
-            }
-            
+            if(m < 0 || (m === 0 && today.getDate() < start.getDate())) years--;
             return years < 0 ? 'N/A' : years + ' year(s)';
         } catch(e) {
-            console.error('Error calculating years of service:', e);
             return 'N/A';
         }
     },
     
     formatDate: function(dateString) {
         if(!dateString) return 'N/A';
-        
         try {
             const date = new Date(dateString);
             if(isNaN(date.getTime())) return 'N/A';
-            
             return date.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
         } catch(e) {
-            console.error('Error formatting date:', e);
             return 'N/A';
         }
     },
@@ -264,7 +239,8 @@ const EmployeeView = {
         }
         
         // Close on Escape key
-        document.addEventListener('keydown', this.handleEscape.bind(this));
+        this.escapeHandler = this.handleEscape.bind(this);
+        document.addEventListener('keydown', this.escapeHandler);
     },
     
     handleEscape: function(e) {
@@ -278,8 +254,6 @@ const EmployeeView = {
         if(!modalContent) return;
         
         const printContent = modalContent.cloneNode(true);
-        
-        // Remove buttons and interactive elements from print
         printContent.querySelectorAll('.modal-footer, .modal-close, .btn, .close').forEach(el => {
             if(el) el.remove();
         });
@@ -325,12 +299,9 @@ const EmployeeView = {
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.classList.remove('active');
-            modal.style.display = 'none';
         }
-        // Re-enable body scroll
-        document.body.classList.remove('modal-open');
         // Remove escape listener
-        document.removeEventListener('keydown', this.handleEscape.bind(this));
+        document.removeEventListener('keydown', this.escapeHandler);
         // Return to employee list
         Router.navigate('employee-list');
     }
