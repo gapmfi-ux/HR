@@ -1,4 +1,4 @@
-// js/employee/employee-view.js
+
 const EmployeeView = {
     employeeNumber: null,
     employeeData: null,
