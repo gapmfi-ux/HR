@@ -1,151 +1,108 @@
 <div id="summaryModal" class="modal">
   <div class="modal-content modal-lg">
     <div class="modal-header">
-      <h2 class="modal-title"><i class="fas fa-user-circle"></i> Employee Details</h2>
+      <h2 class="modal-title">📋 Employee Bio Data</h2>
       <button class="modal-close" type="button" onclick="EmployeeView.close()">&times;</button>
     </div>
     
     <div class="modal-body">
-      <!-- Employee Number -->
-      <div class="section">
-        <div class="section-header">
-          <h3><i class="fas fa-id-card"></i> Employee Information</h3>
+      <!-- Employee Header Card - Compact -->
+      <div class="employee-header">
+        <div class="emp-header-left">
+          <div class="emp-avatar"><i class="fas fa-user-circle"></i></div>
+          <div class="emp-basic">
+            <h3 id="empName" class="emp-name"></h3>
+            <div class="emp-meta">
+              <span class="meta-badge"><i class="fas fa-id-card"></i> <span id="empNum"></span></span>
+              <span id="empStatus" class="status-badge"></span>
+            </div>
+          </div>
         </div>
-        <div class="section-body">
-          <div class="info-row">
-            <p><strong>Employee Number:</strong> <span id="empNum" class="highlight-value"></span></p>
-            <p><strong>Status:</strong> <span id="empStatus" class="status-badge"></span></p>
+        <div class="emp-header-right">
+          <div class="emp-stats">
+            <div class="stat-item"><span class="stat-label">Age</span><span id="empAge" class="stat-value"></span></div>
+            <div class="stat-item"><span class="stat-label">Service</span><span id="empYearsOfService" class="stat-value"></span></div>
           </div>
         </div>
       </div>
 
-      <!-- Personal Details -->
-      <div class="section">
-        <div class="section-header">
-          <h3><i class="fas fa-user"></i> Personal Details</h3>
-        </div>
-        <div class="section-body">
-          <div class="info-row">
-            <p><strong>Full Name:</strong> <span id="empName" class="highlight-value"></span></p>
-            <p><strong>Sex:</strong> <span id="empSex" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Date of Birth:</strong> <span id="empDob" class="highlight-value"></span></p>
-            <p><strong>Age:</strong> <span id="empAge" class="highlight-value"></span></p>
-            <p><strong>Place of Birth:</strong> <span id="empPlaceOfBirth" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Nationality:</strong> <span id="empNationality" class="highlight-value"></span></p>
-            <p><strong>ID Type:</strong> <span id="empIdType" class="highlight-value"></span></p>
-            <p><strong>ID Number:</strong> <span id="empIdNumber" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Contact Number:</strong> <span id="empContactTelephone" class="highlight-value"></span></p>
-            <p><strong>Email:</strong> <span id="empEmail" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Place of Residence:</strong> <span id="empPlaceOfResidence" class="highlight-value"></span></p>
-            <p><strong>Residence Type:</strong> <span id="empResidenceType" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Digital Address:</strong> <span id="empDigitalAddress" class="highlight-value"></span></p>
-            <p><strong>Landmark:</strong> <span id="empLandmark" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Marital Status:</strong> <span id="empMaritalStatus" class="highlight-value"></span></p>
-            <p><strong>Spouse Name:</strong> <span id="empSpouseName" class="highlight-value"></span></p>
-            <p><strong>Number of Children:</strong> <span id="empChildren" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Father's Name:</strong> <span id="empFatherName" class="highlight-value"></span></p>
-            <p><strong>Mother's Name:</strong> <span id="empMotherName" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Next of Kin:</strong> <span id="empNextOfKin" class="highlight-value"></span></p>
-            <p><strong>Kin Contact:</strong> <span id="empKinContact" class="highlight-value"></span></p>
-            <p><strong>Kin Residence:</strong> <span id="empKinResidence" class="highlight-value"></span></p>
-          </div>
+      <!-- Personal Details - Compact Grid -->
+      <div class="compact-section">
+        <div class="section-title"><i class="fas fa-user"></i> Personal</div>
+        <div class="compact-grid">
+          <div class="grid-item"><span class="item-label">Sex:</span><span id="empSex" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">DOB:</span><span id="empDob" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Birth Place:</span><span id="empPlaceOfBirth" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Nationality:</span><span id="empNationality" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">ID Type:</span><span id="empIdType" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">ID Number:</span><span id="empIdNumber" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Phone:</span><span id="empContactTelephone" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Email:</span><span id="empEmail" class="highlight-value"></span></div>
+          <div class="grid-item full-width"><span class="item-label">Residence:</span><span id="empPlaceOfResidence" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Residence Type:</span><span id="empResidenceType" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Digital Address:</span><span id="empDigitalAddress" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Landmark:</span><span id="empLandmark" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Marital Status:</span><span id="empMaritalStatus" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Spouse:</span><span id="empSpouseName" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Children:</span><span id="empChildren" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Father:</span><span id="empFatherName" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Mother:</span><span id="empMotherName" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Next of Kin:</span><span id="empNextOfKin" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Kin Contact:</span><span id="empKinContact" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Kin Residence:</span><span id="empKinResidence" class="highlight-value"></span></div>
         </div>
       </div>
 
       <!-- Employment Details -->
-      <div class="section">
-        <div class="section-header">
-          <h3><i class="fas fa-briefcase"></i> Employment Details</h3>
-        </div>
-        <div class="section-body">
-          <div class="info-row">
-            <p><strong>Date of Appointment:</strong> <span id="empDateOfAppointment" class="highlight-value"></span></p>
-            <p><strong>Years of Service:</strong> <span id="empYearsOfService" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Date of Assumption:</strong> <span id="empDateOfAssumption" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>Designation:</strong> <span id="empDesignation" class="highlight-value"></span></p>
-            <p><strong>Department:</strong> <span id="empDepartment" class="highlight-value"></span></p>
-          </div>
-          <div class="info-row">
-            <p><strong>SSNIT Number:</strong> <span id="empSsnitNumber" class="highlight-value"></span></p>
-            <p><strong>TIN Number:</strong> <span id="empTinNumber" class="highlight-value"></span></p>
-            <p><strong>Employment Type:</strong> <span id="empEmploymentType" class="highlight-value"></span></p>
-          </div>
+      <div class="compact-section">
+        <div class="section-title"><i class="fas fa-briefcase"></i> Employment</div>
+        <div class="compact-grid two-col">
+          <div class="grid-item"><span class="item-label">Designation:</span><span id="empDesignation" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Department:</span><span id="empDepartment" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Employment Type:</span><span id="empEmploymentType" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Appointment:</span><span id="empDateOfAppointment" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Assumption:</span><span id="empDateOfAssumption" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">SSNIT:</span><span id="empSsnitNumber" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">TIN:</span><span id="empTinNumber" class="highlight-value"></span></div>
         </div>
       </div>
 
       <!-- Education Details -->
-      <div class="section">
-        <div class="section-header">
-          <h3><i class="fas fa-graduation-cap"></i> Education Details</h3>
-        </div>
-        <div class="section-body">
-          <div class="education-group">
-            <h4>Secondary Education</h4>
-            <div class="info-row">
-              <p><strong>Institution:</strong> <span id="secInstitution" class="highlight-value"></span></p>
-              <p><strong>Major:</strong> <span id="secMajor" class="highlight-value"></span></p>
-              <p><strong>Year:</strong> <span id="secYear" class="highlight-value"></span></p>
-            </div>
-          </div>
-          <div class="education-group">
-            <h4>Tertiary Education</h4>
-            <div class="info-row">
-              <p><strong>Institution:</strong> <span id="terInstitution" class="highlight-value"></span></p>
-              <p><strong>Major:</strong> <span id="terMajor" class="highlight-value"></span></p>
-              <p><strong>Year:</strong> <span id="terYear" class="highlight-value"></span></p>
-            </div>
-          </div>
-          <div class="education-group">
-            <h4>Professional Education</h4>
-            <div class="info-row">
-              <p><strong>Institution:</strong> <span id="profInstitution" class="highlight-value"></span></p>
-              <p><strong>Major:</strong> <span id="profMajor" class="highlight-value"></span></p>
-              <p><strong>Year:</strong> <span id="profYear" class="highlight-value"></span></p>
-            </div>
-          </div>
+      <div class="compact-section">
+        <div class="section-title"><i class="fas fa-graduation-cap"></i> Education</div>
+        <div class="compact-grid three-col">
+          <div class="grid-item"><span class="item-label">Secondary:</span><span id="secInstitution" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Major:</span><span id="secMajor" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Year:</span><span id="secYear" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Tertiary:</span><span id="terInstitution" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Major:</span><span id="terMajor" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Year:</span><span id="terYear" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Professional:</span><span id="profInstitution" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Cert:</span><span id="profMajor" class="highlight-value"></span></div>
+          <div class="grid-item"><span class="item-label">Year:</span><span id="profYear" class="highlight-value"></span></div>
         </div>
       </div>
 
       <!-- Guarantor Details -->
-      <div class="section">
-        <div class="section-header">
-          <h3><i class="fas fa-handshake"></i> Guarantor Details</h3>
-        </div>
-        <div class="section-body">
-          <div class="guarantor-container">
-            <div class="guarantor">
-              <h4>Guarantor 1</h4>
-              <p><strong>Name:</strong> <span id="guarantor1Name" class="highlight-value"></span></p>
-              <p><strong>Contact:</strong> <span id="guarantor1Contact" class="highlight-value"></span></p>
-              <p><strong>Address:</strong> <span id="guarantor1Address" class="highlight-value"></span></p>
-              <p><strong>Email:</strong> <span id="guarantor1Email" class="highlight-value"></span></p>
+      <div class="compact-section">
+        <div class="section-title"><i class="fas fa-handshake"></i> Guarantors</div>
+        <div class="guarantor-compact">
+          <div class="guarantor-box">
+            <div class="guarantor-title">Guarantor 1</div>
+            <div class="guarantor-grid">
+              <span><strong>Name:</strong> <span id="guarantor1Name" class="highlight-value"></span></span>
+              <span><strong>Contact:</strong> <span id="guarantor1Contact" class="highlight-value"></span></span>
+              <span><strong>Email:</strong> <span id="guarantor1Email" class="highlight-value"></span></span>
+              <span><strong>Address:</strong> <span id="guarantor1Address" class="highlight-value"></span></span>
             </div>
-            <div class="guarantor">
-              <h4>Guarantor 2</h4>
-              <p><strong>Name:</strong> <span id="guarantor2Name" class="highlight-value"></span></p>
-              <p><strong>Contact:</strong> <span id="guarantor2Contact" class="highlight-value"></span></p>
-              <p><strong>Address:</strong> <span id="guarantor2Address" class="highlight-value"></span></p>
-              <p><strong>Email:</strong> <span id="guarantor2Email" class="highlight-value"></span></p>
+          </div>
+          <div class="guarantor-box">
+            <div class="guarantor-title">Guarantor 2</div>
+            <div class="guarantor-grid">
+              <span><strong>Name:</strong> <span id="guarantor2Name" class="highlight-value"></span></span>
+              <span><strong>Contact:</strong> <span id="guarantor2Contact" class="highlight-value"></span></span>
+              <span><strong>Email:</strong> <span id="guarantor2Email" class="highlight-value"></span></span>
+              <span><strong>Address:</strong> <span id="guarantor2Address" class="highlight-value"></span></span>
             </div>
           </div>
         </div>
