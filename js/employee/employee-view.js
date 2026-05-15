@@ -22,6 +22,8 @@ const EmployeeView = {
             Utils.hideLoading();
             await this.loadAndShowModal();
             this.setupEventListeners();
+            // Prevent body scroll when modal is open
+            document.body.classList.add('modal-open');
         } catch(e) {
             Utils.hideLoading();
             Utils.showToast('Failed to load employee details', 'error');
@@ -154,7 +156,8 @@ const EmployeeView = {
     setElementText: function(id, value) {
         const element = document.getElementById(id);
         if(element) {
-            element.textContent = value || 'N/A';
+            const displayValue = value || 'N/A';
+            element.textContent = displayValue;
         }
     },
     
@@ -168,7 +171,7 @@ const EmployeeView = {
     },
     
     /**
-     * Calculate age from date of birth (FRONTEND VERSION)
+     * Calculate age from date of birth
      */
     calculateAge: function(dob) {
         if(!dob) return 'N/A';
@@ -193,7 +196,7 @@ const EmployeeView = {
     },
     
     /**
-     * Calculate years of service from appointment date (FRONTEND VERSION)
+     * Calculate years of service from appointment date
      */
     calculateYearsOfService: function(startDate) {
         if(!startDate) return 'N/A';
@@ -248,7 +251,6 @@ const EmployeeView = {
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.onclick = (e) => {
-                // Only close if clicking directly on the modal background, not on modal-content
                 if(e.target === modal) {
                     this.close();
                 }
@@ -260,6 +262,15 @@ const EmployeeView = {
         if(closeBtn) {
             closeBtn.onclick = () => this.close();
         }
+        
+        // Close on Escape key
+        document.addEventListener('keydown', this.handleEscape.bind(this));
+    },
+    
+    handleEscape: function(e) {
+        if(e.key === 'Escape') {
+            this.close();
+        }
     },
     
     print: function() {
@@ -268,8 +279,8 @@ const EmployeeView = {
         
         const printContent = modalContent.cloneNode(true);
         
-        // Remove buttons from print
-        printContent.querySelectorAll('.modal-footer, .close, .btn').forEach(el => {
+        // Remove buttons and interactive elements from print
+        printContent.querySelectorAll('.modal-footer, .modal-close, .btn, .close').forEach(el => {
             if(el) el.remove();
         });
         
@@ -290,10 +301,11 @@ const EmployeeView = {
                     .info-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 10px; }
                     .info-row p { flex: 1; min-width: 200px; }
                     .info-row strong { display: inline-block; width: 130px; }
+                    .highlight-value { color: #3b82f6; font-weight: 700; }
                     .guarantor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
                     .guarantor { background: #f9f9f9; padding: 12px; border-radius: 8px; }
-                    .status-active { color: green; }
-                    .status-inactive { color: red; }
+                    .status-active { color: green; font-weight: 600; }
+                    .status-inactive { color: red; font-weight: 600; }
                     @media print {
                         body { padding: 20px; }
                         .section { break-inside: avoid; }
@@ -302,7 +314,7 @@ const EmployeeView = {
             </head>
             <body>
                 ${printContent.outerHTML}
-                <script>window.onload = () => window.print();<\/script>
+                <script>window.onload = () => window.print(); window.onafterprint = () => window.close();<\/script>
             </body>
             </html>
         `);
@@ -315,6 +327,10 @@ const EmployeeView = {
             modal.classList.remove('active');
             modal.style.display = 'none';
         }
+        // Re-enable body scroll
+        document.body.classList.remove('modal-open');
+        // Remove escape listener
+        document.removeEventListener('keydown', this.handleEscape.bind(this));
         // Return to employee list
         Router.navigate('employee-list');
     }
