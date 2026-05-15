@@ -14,6 +14,7 @@ const EmployeeView = {
         
         this.employeeNumber = params.id;
         
+        // Show loading state
         Utils.showLoading();
         
         try {
@@ -21,6 +22,7 @@ const EmployeeView = {
             Utils.hideLoading();
             await this.loadAndShowModal();
             this.setupEventListeners();
+            // Do NOT prevent body scroll - modal scrolls with page naturally
         } catch(e) {
             Utils.hideLoading();
             Utils.showToast('Failed to load employee details', 'error');
@@ -43,11 +45,13 @@ const EmployeeView = {
     
     loadAndShowModal: async function() {
         try {
+            // Load modal HTML
             const response = await fetch('pages/employee/view.html');
             if(!response.ok) throw new Error('Failed to load view.html');
             
             const html = await response.text();
             
+            // Get or create modal container
             let modalContainer = document.getElementById('modalContainer');
             if(!modalContainer) {
                 modalContainer = document.createElement('div');
@@ -55,9 +59,13 @@ const EmployeeView = {
                 document.body.appendChild(modalContainer);
             }
             
+            // Insert HTML
             modalContainer.innerHTML = html;
+            
+            // Populate modal with data
             this.populateModal();
             
+            // Show modal
             const modal = document.getElementById('summaryModal');
             if(modal) {
                 modal.classList.add('active');
@@ -72,19 +80,20 @@ const EmployeeView = {
         const emp = this.employeeData;
         if(!emp) return;
         
+        // Calculate age and years of service
         const age = this.calculateAge(emp.dob);
         const yearsOfService = this.calculateYearsOfService(emp.appointmentDate);
         
-        // Header - Name, Number, Status
-        this.setElementText('empName', emp.name);
+        // Employee Information
         this.setElementText('empNum', emp.employeeNumber);
-        this.setElementText('empAge', age);
-        this.setElementText('empYearsOfService', yearsOfService);
+        this.setElementText('empStatus', emp.status || 'Active');
         this.setStatusBadge(emp.status);
         
         // Personal Details
+        this.setElementText('empName', emp.name);
         this.setElementText('empSex', emp.sex);
         this.setElementText('empDob', this.formatDate(emp.dob));
+        this.setElementText('empAge', age);
         this.setElementText('empPlaceOfBirth', emp.placeOfBirth);
         this.setElementText('empNationality', emp.nationality);
         this.setElementText('empIdType', emp.idType);
@@ -105,30 +114,37 @@ const EmployeeView = {
         this.setElementText('empKinResidence', emp.kinResidence);
         
         // Employment Details
+        this.setElementText('empDateOfAppointment', this.formatDate(emp.appointmentDate || emp.dateOfAppointment));
+        this.setElementText('empYearsOfService', yearsOfService);
+        this.setElementText('empDateOfAssumption', this.formatDate(emp.assumptionDate || emp.dateOfAssumption));
         this.setElementText('empDesignation', emp.designation);
         this.setElementText('empDepartment', emp.department);
-        this.setElementText('empEmploymentType', emp.employmentType);
-        this.setElementText('empDateOfAppointment', this.formatDate(emp.appointmentDate || emp.dateOfAppointment));
-        this.setElementText('empDateOfAssumption', this.formatDate(emp.assumptionDate || emp.dateOfAssumption));
         this.setElementText('empSsnitNumber', emp.ssnitNumber || emp.ssnit);
         this.setElementText('empTinNumber', emp.tinNumber);
+        this.setElementText('empEmploymentType', emp.employmentType);
         
-        // Education
+        // Education - Secondary
         this.setElementText('secInstitution', emp.secondaryInstitution);
         this.setElementText('secMajor', emp.secondaryMajor);
         this.setElementText('secYear', emp.secondaryYear);
+        
+        // Education - Tertiary
         this.setElementText('terInstitution', emp.tertiaryInstitution);
         this.setElementText('terMajor', emp.tertiaryMajor);
         this.setElementText('terYear', emp.tertiaryYear);
+        
+        // Education - Professional
         this.setElementText('profInstitution', emp.professionalInstitution);
         this.setElementText('profMajor', emp.professionalMajor);
         this.setElementText('profYear', emp.professionalYear);
         
-        // Guarantors
+        // Guarantor 1
         this.setElementText('guarantor1Name', emp.guarantor1Name);
         this.setElementText('guarantor1Contact', emp.guarantor1Contact);
         this.setElementText('guarantor1Address', emp.guarantor1Address);
         this.setElementText('guarantor1Email', emp.guarantor1Email);
+        
+        // Guarantor 2
         this.setElementText('guarantor2Name', emp.guarantor2Name);
         this.setElementText('guarantor2Contact', emp.guarantor2Contact);
         this.setElementText('guarantor2Address', emp.guarantor2Address);
@@ -138,7 +154,8 @@ const EmployeeView = {
     setElementText: function(id, value) {
         const element = document.getElementById(id);
         if(element) {
-            element.textContent = value || '—';
+            const displayValue = value || 'N/A';
+            element.textContent = displayValue;
         }
     },
     
@@ -152,47 +169,47 @@ const EmployeeView = {
     },
     
     calculateAge: function(dob) {
-        if(!dob) return '—';
+        if(!dob) return 'N/A';
         try {
             const birthDate = new Date(dob);
-            if(isNaN(birthDate.getTime())) return '—';
+            if(isNaN(birthDate.getTime())) return 'N/A';
             const today = new Date();
             let age = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
             if(m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-            return age < 0 ? '—' : age;
+            return age < 0 ? 'N/A' : age + ' years';
         } catch(e) {
-            return '—';
+            return 'N/A';
         }
     },
     
     calculateYearsOfService: function(startDate) {
-        if(!startDate) return '—';
+        if(!startDate) return 'N/A';
         try {
             const start = new Date(startDate);
-            if(isNaN(start.getTime())) return '—';
+            if(isNaN(start.getTime())) return 'N/A';
             const today = new Date();
             let years = today.getFullYear() - start.getFullYear();
             const m = today.getMonth() - start.getMonth();
             if(m < 0 || (m === 0 && today.getDate() < start.getDate())) years--;
-            return years < 0 ? '—' : years;
+            return years < 0 ? 'N/A' : years + ' year(s)';
         } catch(e) {
-            return '—';
+            return 'N/A';
         }
     },
     
     formatDate: function(dateString) {
-        if(!dateString) return '—';
+        if(!dateString) return 'N/A';
         try {
             const date = new Date(dateString);
-            if(isNaN(date.getTime())) return '—';
+            if(isNaN(date.getTime())) return 'N/A';
             return date.toLocaleDateString('en-US', {
                 year: 'numeric',
-                month: 'short',
+                month: 'long',
                 day: 'numeric'
             });
         } catch(e) {
-            return '—';
+            return 'N/A';
         }
     },
     
@@ -205,22 +222,31 @@ const EmployeeView = {
             };
         }
         
+        // Close modal when clicking outside (on the dark overlay)
         const modal = document.getElementById('summaryModal');
         if(modal) {
             modal.onclick = (e) => {
-                if(e.target === modal) this.close();
+                if(e.target === modal) {
+                    this.close();
+                }
             };
         }
         
+        // Close button
         const closeBtn = document.querySelector('.modal-close');
-        if(closeBtn) closeBtn.onclick = () => this.close();
+        if(closeBtn) {
+            closeBtn.onclick = () => this.close();
+        }
         
+        // Close on Escape key
         this.escapeHandler = this.handleEscape.bind(this);
         document.addEventListener('keydown', this.escapeHandler);
     },
     
     handleEscape: function(e) {
-        if(e.key === 'Escape') this.close();
+        if(e.key === 'Escape') {
+            this.close();
+        }
     },
     
     print: function() {
@@ -228,27 +254,42 @@ const EmployeeView = {
         if(!modalContent) return;
         
         const printContent = modalContent.cloneNode(true);
-        printContent.querySelectorAll('.modal-footer, .modal-close, .btn').forEach(el => el?.remove());
+        printContent.querySelectorAll('.modal-footer, .modal-close, .btn, .close').forEach(el => {
+            if(el) el.remove();
+        });
         
         const printWindow = window.open('', '_blank');
         printWindow.document.write(`
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Employee Profile</title>
+                <title>Employee Profile - ${this.employeeData?.employeeNumber || 'Employee'}</title>
                 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
                 <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; }
-                    .employee-header { background: #f5f5f5; padding: 10px; margin-bottom: 15px; }
-                    .compact-section { border: 1px solid #ddd; margin-bottom: 10px; }
-                    .section-title { background: #eee; padding: 6px 10px; }
-                    .compact-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; padding: 10px; }
-                    .grid-item { font-size: 11px; }
-                    .highlight-value { color: #2563eb; font-weight: 600; }
-                    @media print { body { padding: 0; } }
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { font-family: 'Inter', Arial, sans-serif; padding: 40px; background: white; }
+                    .modal-content { max-width: 900px; margin: 0 auto; }
+                    .section { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; }
+                    .section-header { background: #f5f5f5; padding: 10px 16px; border-bottom: 1px solid #ddd; }
+                    .section-body { padding: 16px; }
+                    .info-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 10px; }
+                    .info-row p { flex: 1; min-width: 200px; }
+                    .info-row strong { display: inline-block; width: 130px; }
+                    .highlight-value { color: #3b82f6; font-weight: 700; }
+                    .guarantor-container { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+                    .guarantor { background: #f9f9f9; padding: 12px; border-radius: 8px; }
+                    .status-active { color: green; font-weight: 600; }
+                    .status-inactive { color: red; font-weight: 600; }
+                    @media print {
+                        body { padding: 20px; }
+                        .section { break-inside: avoid; }
+                    }
                 </style>
             </head>
-            <body>${printContent.innerHTML}<script>window.onload=()=>window.print()<\/script></body>
+            <body>
+                ${printContent.outerHTML}
+                <script>window.onload = () => window.print(); window.onafterprint = () => window.close();<\/script>
+            </body>
             </html>
         `);
         printWindow.document.close();
@@ -256,8 +297,12 @@ const EmployeeView = {
     
     close: function() {
         const modal = document.getElementById('summaryModal');
-        if(modal) modal.classList.remove('active');
+        if(modal) {
+            modal.classList.remove('active');
+        }
+        // Remove escape listener
         document.removeEventListener('keydown', this.escapeHandler);
+        // Return to employee list
         Router.navigate('employee-list');
     }
 };
