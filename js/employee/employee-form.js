@@ -1,6 +1,6 @@
 const Employee = {
     currentTab: 0,
-    tabs: ['personal', 'employment', 'education', 'guarantor', 'documents'],
+    tabs: ['personal', 'contact', 'family', 'employment', 'education', 'guarantor', 'documents'],
     employeeNumber: null,
     isEditMode: false,
     
@@ -84,27 +84,37 @@ const Employee = {
     
     populateForm: function(data) {
         const fieldMappings = {
+            // Tab 1: Personal
             'employeeNumber': 'employeeNumber',
             'employeeName': 'name',
             'sex': 'sex',
-            'nationality': 'nationality',
+            'dob': 'dob',
             'idType': 'idType',
             'idNumber': 'idNumber',
-            'dob': 'dob',
             'placeOfBirth': 'placeOfBirth',
+            'nationality': 'nationality',
+            // Tab 2: Contact & Residential
             'contactNumber': 'contactTelephone',
+            'emailAddress': 'emailAddress',
+            'postalAddress': 'postalAddress',
             'residence': 'residence',
             'digitalAddress': 'digitalAddress',
             'landmark': 'landmark',
             'residenceType': 'residenceType',
+            // Tab 3: Family
             'maritalStatus': 'maritalStatus',
             'spouseName': 'spouseName',
+            'spouseContact': 'spouseContact',
             'childrenCount': 'childrenCount',
             'fatherName': 'fatherName',
+            'fatherContact': 'fatherContact',
             'motherName': 'motherName',
-            'nextOfKin': 'nextOfKin',
-            'kinContact': 'kinContact',
-            'kinResidence': 'kinResidence',
+            'motherContact': 'motherContact',
+            'nextOfKinName': 'nextOfKinName',
+            'kinRelationship': 'kinRelationship',
+            'nextOfKinContact': 'nextOfKinContact',
+            'nextOfKinResidence': 'nextOfKinResidence',
+            // Tab 4: Employment
             'dateOfAppointment': 'appointmentDate',
             'assumptionDate': 'assumptionDate',
             'designation': 'designation',
@@ -112,6 +122,7 @@ const Employee = {
             'employmentType': 'employmentType',
             'ssnit': 'ssnitNumber',
             'tinNumber': 'tinNumber',
+            // Tab 5: Education
             'secondaryInstitution': 'secondaryInstitution',
             'secondaryMajor': 'secondaryMajor',
             'secondaryYear': 'secondaryYear',
@@ -121,14 +132,15 @@ const Employee = {
             'professionalInstitution': 'professionalInstitution',
             'professionalMajor': 'professionalMajor',
             'professionalYear': 'professionalYear',
+            // Tab 6: Guarantors
             'guarantor1Name': 'guarantor1Name',
             'guarantor1Contact': 'guarantor1Contact',
-            'guarantor1Address': 'guarantor1Address',
             'guarantor1Email': 'guarantor1Email',
+            'guarantor1Address': 'guarantor1Address',
             'guarantor2Name': 'guarantor2Name',
             'guarantor2Contact': 'guarantor2Contact',
-            'guarantor2Address': 'guarantor2Address',
-            'guarantor2Email': 'guarantor2Email'
+            'guarantor2Email': 'guarantor2Email',
+            'guarantor2Address': 'guarantor2Address'
         };
         
         Object.entries(fieldMappings).forEach(([fieldId, dataKey]) => {
@@ -169,13 +181,21 @@ const Employee = {
         // Collect form data
         const data = {};
         const fields = [
-            'employeeName','sex','nationality','idType','idNumber','dob','placeOfBirth','contactNumber',
-            'residence','digitalAddress','landmark','residenceType','maritalStatus','spouseName','childrenCount',
-            'fatherName','motherName','nextOfKin','kinContact','kinResidence','dateOfAppointment','assumptionDate',
-            'designation','ssnit','tinNumber','employmentType','department','secondaryInstitution','secondaryMajor',
-            'secondaryYear','tertiaryInstitution','tertiaryMajor','tertiaryYear','professionalInstitution',
-            'professionalMajor','professionalYear','guarantor1Name','guarantor1Contact','guarantor1Address',
-            'guarantor1Email','guarantor2Name','guarantor2Contact','guarantor2Address','guarantor2Email'
+            // Tab 1: Personal
+            'employeeName', 'sex', 'dob', 'idType', 'idNumber', 'placeOfBirth', 'nationality',
+            // Tab 2: Contact & Residential
+            'contactNumber', 'emailAddress', 'postalAddress', 'residence', 'digitalAddress', 'landmark', 'residenceType',
+            // Tab 3: Family
+            'maritalStatus', 'spouseName', 'spouseContact', 'childrenCount', 'fatherName', 'fatherContact', 'motherName', 'motherContact',
+            'nextOfKinName', 'kinRelationship', 'nextOfKinContact', 'nextOfKinResidence',
+            // Tab 4: Employment
+            'dateOfAppointment', 'assumptionDate', 'designation', 'department', 'employmentType', 'ssnit', 'tinNumber',
+            // Tab 5: Education
+            'secondaryInstitution', 'secondaryMajor', 'secondaryYear', 'tertiaryInstitution', 'tertiaryMajor', 'tertiaryYear',
+            'professionalInstitution', 'professionalMajor', 'professionalYear',
+            // Tab 6: Guarantors
+            'guarantor1Name', 'guarantor1Contact', 'guarantor1Email', 'guarantor1Address',
+            'guarantor2Name', 'guarantor2Contact', 'guarantor2Email', 'guarantor2Address'
         ];
         
         fields.forEach(f => { 
