@@ -161,53 +161,111 @@
         
         <!-- Tab 7: Documents -->
         <div id="tab-documents" class="tab-pane">
-            <div class="document-upload-row">
-                <div class="doc-label">Passport Photo</div>
-                <div class="doc-upload-area" id="upload-area-passportPhoto"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-passportPhoto" class="doc-file-input" accept="image/*"></div>
-                <button type="button" class="doc-upload-btn" id="upload-passportPhoto">Upload</button>
-                <div class="doc-file-name empty" id="file-name-passportPhoto"></div>
-            </div>
-            
-            <div class="document-upload-row">
-                <div class="doc-label">National ID</div>
-                <div class="doc-upload-area" id="upload-area-nationalId"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-nationalId" class="doc-file-input" accept="image/*,.pdf"></div>
-                <button type="button" class="doc-upload-btn" id="upload-nationalId">Upload</button>
-                <div class="doc-file-name empty" id="file-name-nationalId"></div>
-            </div>
-            
-            <div class="document-upload-row">
-                <div class="doc-label">Certificates</div>
-                <div class="doc-upload-area" id="upload-area-certificates"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-certificates" class="doc-file-input" accept=".pdf,image/*"></div>
-                <button type="button" class="doc-upload-btn" id="upload-certificates">Upload</button>
-                <div class="doc-file-name empty" id="file-name-certificates"></div>
-            </div>
-            
-            <div class="document-upload-row">
-                <div class="doc-label">Degree Certificates</div>
-                <div class="doc-upload-area" id="upload-area-degreeCerts"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-degreeCerts" class="doc-file-input" accept=".pdf,image/*"></div>
-                <button type="button" class="doc-upload-btn" id="upload-degreeCerts">Upload</button>
-                <div class="doc-file-name empty" id="file-name-degreeCerts"></div>
-            </div>
-            
-            <div class="document-upload-row">
-                <div class="doc-label">Professional Certificates</div>
-                <div class="doc-upload-area" id="upload-area-professionalCerts"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-professionalCerts" class="doc-file-input" accept=".pdf,image/*"></div>
-                <button type="button" class="doc-upload-btn" id="upload-professionalCerts">Upload</button>
-                <div class="doc-file-name empty" id="file-name-professionalCerts"></div>
-            </div>
-            
-            <div class="document-upload-row">
-                <div class="doc-label">CV / Resume</div>
-                <div class="doc-upload-area" id="upload-area-cv"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-cv" class="doc-file-input" accept=".pdf,.doc,.docx"></div>
-                <button type="button" class="doc-upload-btn" id="upload-cv">Upload</button>
-                <div class="doc-file-name empty" id="file-name-cv"></div>
-            </div>
-            
-            <div class="document-upload-row">
-                <div class="doc-label">Other Documents</div>
-                <div class="doc-upload-area" id="upload-area-otherDocs"><i class="fas fa-cloud-upload-alt"></i> <span>Click to upload</span><input type="file" id="file-otherDocs" class="doc-file-input"></div>
-                <button type="button" class="doc-upload-btn" id="upload-otherDocs">Upload</button>
-                <div class="doc-file-name empty" id="file-name-otherDocs"></div>
+            <div class="documents-grid">
+                <!-- Passport Photo -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-image doc-card-icon"></i>
+                        Passport Photo
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-passportPhoto">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-passportPhoto" class="doc-file-input" accept="image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-passportPhoto"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-passportPhoto">Upload</button>
+                </div>
+                
+                <!-- National ID -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-id-card doc-card-icon"></i>
+                        National ID
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-nationalId">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-nationalId" class="doc-file-input" accept="image/*,.pdf">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-nationalId"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-nationalId">Upload</button>
+                </div>
+                
+                <!-- Certificates -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-certificate doc-card-icon"></i>
+                        Certificates
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-certificates">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-certificates" class="doc-file-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-certificates"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-certificates">Upload</button>
+                </div>
+                
+                <!-- Degree Certificates -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-graduation-cap doc-card-icon"></i>
+                        Degree Certificates
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-degreeCerts">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-degreeCerts" class="doc-file-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-degreeCerts"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-degreeCerts">Upload</button>
+                </div>
+                
+                <!-- Professional Certificates -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-award doc-card-icon"></i>
+                        Professional Certificates
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-professionalCerts">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-professionalCerts" class="doc-file-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-professionalCerts"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-professionalCerts">Upload</button>
+                </div>
+                
+                <!-- CV / Resume -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-file-alt doc-card-icon"></i>
+                        CV / Resume
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-cv">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-cv" class="doc-file-input" accept=".pdf,.doc,.docx">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-cv"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-cv">Upload</button>
+                </div>
+                
+                <!-- Other Documents -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-folder doc-card-icon"></i>
+                        Other Documents
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-otherDocs">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-otherDocs" class="doc-file-input">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-otherDocs"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-otherDocs">Upload</button>
+                </div>
             </div>
         </div>
         
