@@ -3,6 +3,7 @@ const Employee = {
     tabs: ['personal', 'contact', 'family', 'employment', 'education', 'guarantor', 'documents'],
     employeeNumber: null,
     isEditMode: false,
+    uploadedDocuments: {}, // Track uploaded documents by type
     
     init: async function(params = {}) {
         this.setupTabs();
@@ -84,7 +85,7 @@ const Employee = {
     
     populateForm: function(data) {
         const fieldMappings = {
-            // Tab 1: Personal
+            // Personal Tab
             'employeeNumber': 'employeeNumber',
             'employeeName': 'name',
             'sex': 'sex',
@@ -93,7 +94,8 @@ const Employee = {
             'idNumber': 'idNumber',
             'placeOfBirth': 'placeOfBirth',
             'nationality': 'nationality',
-            // Tab 2: Contact & Residential
+            
+            // Contact & Residential Tab
             'contactNumber': 'contactTelephone',
             'emailAddress': 'emailAddress',
             'postalAddress': 'postalAddress',
@@ -101,7 +103,8 @@ const Employee = {
             'digitalAddress': 'digitalAddress',
             'landmark': 'landmark',
             'residenceType': 'residenceType',
-            // Tab 3: Family
+            
+            // Family Tab
             'maritalStatus': 'maritalStatus',
             'spouseName': 'spouseName',
             'spouseContact': 'spouseContact',
@@ -112,9 +115,10 @@ const Employee = {
             'motherContact': 'motherContact',
             'nextOfKinName': 'nextOfKinName',
             'kinRelationship': 'kinRelationship',
-            'nextOfKinContact': 'nextOfKinContact',
-            'nextOfKinResidence': 'nextOfKinResidence',
-            // Tab 4: Employment
+            'kinContact': 'kinContact',
+            'kinResidence': 'kinResidence',
+            
+            // Employment Tab
             'dateOfAppointment': 'appointmentDate',
             'assumptionDate': 'assumptionDate',
             'designation': 'designation',
@@ -122,7 +126,8 @@ const Employee = {
             'employmentType': 'employmentType',
             'ssnit': 'ssnitNumber',
             'tinNumber': 'tinNumber',
-            // Tab 5: Education
+            
+            // Education Tab
             'secondaryInstitution': 'secondaryInstitution',
             'secondaryMajor': 'secondaryMajor',
             'secondaryYear': 'secondaryYear',
@@ -132,7 +137,8 @@ const Employee = {
             'professionalInstitution': 'professionalInstitution',
             'professionalMajor': 'professionalMajor',
             'professionalYear': 'professionalYear',
-            // Tab 6: Guarantors
+            
+            // Guarantor Tab
             'guarantor1Name': 'guarantor1Name',
             'guarantor1Contact': 'guarantor1Contact',
             'guarantor1Email': 'guarantor1Email',
@@ -152,27 +158,64 @@ const Employee = {
     },
     
     setupUpload: function() {
-        const area = document.getElementById('docUploadArea');
-        const fileInput = document.getElementById('docFile');
-        if(area) area.onclick = () => fileInput.click();
-        document.getElementById('uploadBtn').onclick = () => this.uploadDoc();
+        const docTypes = ['passportPhoto', 'nationalId', 'certificates', 'degreeCerts', 'professionalCerts', 'cv', 'otherDocs'];
+        
+        docTypes.forEach(docType => {
+            const fileInput = document.getElementById(`file-${docType}`);
+            const uploadBtn = document.getElementById(`upload-${docType}`);
+            const clickArea = document.getElementById(`upload-area-${docType}`);
+            
+            if(clickArea) clickArea.onclick = () => fileInput.click();
+            if(uploadBtn) uploadBtn.onclick = () => this.uploadDoc(docType);
+            
+            if(fileInput) {
+                fileInput.onchange = () => this.updateFileDisplay(docType);
+            }
+        });
     },
     
-    uploadDoc: async function() {
-        const file = document.getElementById('docFile').files[0];
+    updateFileDisplay: function(docType) {
+        const fileInput = document.getElementById(`file-${docType}`);
+        const display = document.getElementById(`file-name-${docType}`);
+        
+        if(fileInput.files[0]) {
+            const file = fileInput.files[0];
+            const size = (file.size / 1024).toFixed(2);
+            display.textContent = `${file.name} (${size}KB)`;
+            display.style.color = '#22c55e';
+        }
+    },
+    
+    uploadDoc: async function(docType) {
+        const file = document.getElementById(`file-${docType}`).files[0];
         if(!file) return Utils.showToast('Select a file', 'error');
         
         const reader = new FileReader();
         reader.onload = async (e) => {
+            const docTypeLabels = {
+                'passportPhoto': 'Passport Photo',
+                'nationalId': 'National ID',
+                'certificates': 'Certificates',
+                'degreeCerts': 'Degree Certificate',
+                'professionalCerts': 'Professional Certificate',
+                'cv': 'CV/Resume',
+                'otherDocs': 'Other Documents'
+            };
+            
             const result = await API.uploadDocument({
                 employeeNumber: this.employeeNumber,
-                documentType: document.getElementById('docType').value,
+                documentType: docTypeLabels[docType],
                 fileName: file.name,
                 fileContent: e.target.result.split(',')[1],
                 mimeType: file.type
             });
-            if(result.success) Utils.showToast('Document uploaded successfully', 'success');
-            else Utils.showToast('Document upload failed', 'error');
+            
+            if(result.success) {
+                this.uploadedDocuments[docType] = file.name;
+                Utils.showToast(`${docTypeLabels[docType]} uploaded successfully`, 'success');
+            } else {
+                Utils.showToast(`${docTypeLabels[docType]} upload failed`, 'error');
+            }
         };
         reader.readAsDataURL(file);
     },
@@ -181,21 +224,21 @@ const Employee = {
         // Collect form data
         const data = {};
         const fields = [
-            // Tab 1: Personal
-            'employeeName', 'sex', 'dob', 'idType', 'idNumber', 'placeOfBirth', 'nationality',
-            // Tab 2: Contact & Residential
-            'contactNumber', 'emailAddress', 'postalAddress', 'residence', 'digitalAddress', 'landmark', 'residenceType',
-            // Tab 3: Family
-            'maritalStatus', 'spouseName', 'spouseContact', 'childrenCount', 'fatherName', 'fatherContact', 'motherName', 'motherContact',
-            'nextOfKinName', 'kinRelationship', 'nextOfKinContact', 'nextOfKinResidence',
-            // Tab 4: Employment
-            'dateOfAppointment', 'assumptionDate', 'designation', 'department', 'employmentType', 'ssnit', 'tinNumber',
-            // Tab 5: Education
-            'secondaryInstitution', 'secondaryMajor', 'secondaryYear', 'tertiaryInstitution', 'tertiaryMajor', 'tertiaryYear',
-            'professionalInstitution', 'professionalMajor', 'professionalYear',
-            // Tab 6: Guarantors
-            'guarantor1Name', 'guarantor1Contact', 'guarantor1Email', 'guarantor1Address',
-            'guarantor2Name', 'guarantor2Contact', 'guarantor2Email', 'guarantor2Address'
+            // Personal
+            'employeeName','sex','dob','idType','idNumber','placeOfBirth','nationality',
+            // Contact
+            'contactNumber','emailAddress','postalAddress','residence','digitalAddress','landmark','residenceType',
+            // Family
+            'maritalStatus','spouseName','spouseContact','childrenCount','fatherName','fatherContact',
+            'motherName','motherContact','nextOfKinName','kinRelationship','kinContact','kinResidence',
+            // Employment
+            'dateOfAppointment','assumptionDate','designation','department','employmentType','ssnit','tinNumber',
+            // Education
+            'secondaryInstitution','secondaryMajor','secondaryYear','tertiaryInstitution','tertiaryMajor',
+            'tertiaryYear','professionalInstitution','professionalMajor','professionalYear',
+            // Guarantor
+            'guarantor1Name','guarantor1Contact','guarantor1Email','guarantor1Address',
+            'guarantor2Name','guarantor2Contact','guarantor2Email','guarantor2Address'
         ];
         
         fields.forEach(f => { 
@@ -204,6 +247,7 @@ const Employee = {
         });
         
         data.employeeNumber = this.employeeNumber;
+        data.uploadedDocuments = this.uploadedDocuments;
         
         Utils.showLoading();
         
