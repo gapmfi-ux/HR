@@ -1,7 +1,7 @@
 <div class="form-container">
     <div class="form-tabs">
         <button class="tab-btn active" data-tab="personal"><i class="fas fa-user"></i><span>Personal</span></button>
-        <button class="tab-btn" data-tab="contact"><i class="fas fa-address-card"></i><span>Contact</span></button>
+        <button class="tab-btn" data-tab="contact"><i class="fas fa-map-marker-alt"></i><span>Contact & Residential</span></button>
         <button class="tab-btn" data-tab="family"><i class="fas fa-home"></i><span>Family</span></button>
         <button class="tab-btn" data-tab="employment"><i class="fas fa-briefcase"></i><span>Employment</span></button>
         <button class="tab-btn" data-tab="education"><i class="fas fa-graduation-cap"></i><span>Education</span></button>
@@ -10,397 +10,214 @@
     </div>
     
     <form id="employeeForm" onsubmit="return false;">
-        <!-- Tab 1: Personal Information -->
+        <!-- Tab 1: Personal -->
         <div id="tab-personal" class="tab-pane active">
-            <h3 class="tab-title">Personal Information</h3>
-            
             <div class="form-row">
-                <div class="form-group">
-                    <label>Employee Number</label>
-                    <input type="text" id="employeeNumber" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Full Name *</label>
-                    <input type="text" id="employeeName" required>
-                </div>
-                <div class="form-group">
-                    <label>Sex *</label>
-                    <select id="sex" required>
-                        <option value="">Select</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Employee Number</label><input type="text" id="employeeNumber" readonly></div>
+                <div class="form-group"><label>Full Name *</label><input type="text" id="employeeName" required></div>
+                <div class="form-group"><label>Sex *</label><select id="sex" required><option value="">Select</option><option>Male</option><option>Female</option></select></div>
             </div>
             
             <div class="form-row">
-                <div class="form-group">
-                    <label>Date of Birth *</label>
-                    <input type="date" id="dob" required>
-                </div>
-                <div class="form-group">
-                    <label>ID Type *</label>
-                    <select id="idType" required>
-                        <option value="">Select</option>
-                        <option>National ID</option>
-                        <option>Passport</option>
-                        <option>Voter ID</option>
-                        <option>Driver's License</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>ID Number *</label>
-                    <input type="text" id="idNumber" required>
-                </div>
+                <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required></div>
+                <div class="form-group"><label>ID Type *</label><select id="idType" required><option>National ID</option><option>Passport</option><option>Voter ID</option></select></div>
+                <div class="form-group"><label>ID Number *</label><input type="text" id="idNumber" required></div>
             </div>
-            
+
             <div class="form-row">
-                <div class="form-group">
-                    <label>Place of Birth *</label>
-                    <input type="text" id="placeOfBirth" required>
-                </div>
-                <div class="form-group">
-                    <label>Nationality *</label>
-                    <input type="text" id="nationality" required>
-                </div>
+                <div class="form-group"><label>Place of Birth *</label><input type="text" id="placeOfBirth" required></div>
+                <div class="form-group"><label>Nationality *</label><input type="text" id="nationality" required></div>
             </div>
         </div>
         
-        <!-- Tab 2: Contact & Residential Information -->
+        <!-- Tab 2: Contact & Residential -->
         <div id="tab-contact" class="tab-pane">
-            <h3 class="tab-title">Contact & Residential Information</h3>
-            
             <div class="form-row">
-                <div class="form-group">
-                    <label>Contact Number *</label>
-                    <input type="tel" id="contactNumber" required>
-                </div>
-                <div class="form-group">
-                    <label>Email Address *</label>
-                    <input type="email" id="emailAddress" required>
-                </div>
-                <div class="form-group">
-                    <label>Postal Address</label>
-                    <input type="text" id="postalAddress">
-                </div>
+                <div class="form-group"><label>Contact Number *</label><input type="tel" id="contactNumber" required></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="emailAddress"></div>
+                <div class="form-group"><label>Postal Address</label><input type="text" id="postalAddress"></div>
             </div>
-            
+
             <div class="form-row">
-                <div class="form-group">
-                    <label>Residence</label>
-                    <input type="text" id="residence">
-                </div>
-                <div class="form-group">
-                    <label>Digital Address</label>
-                    <input type="text" id="digitalAddress">
-                </div>
-                <div class="form-group">
-                    <label>Landmark</label>
-                    <input type="text" id="landmark">
-                </div>
+                <div class="form-group"><label>Residence</label><input type="text" id="residence"></div>
+                <div class="form-group"><label>Digital Address</label><input type="text" id="digitalAddress"></div>
+                <div class="form-group"><label>Landmark</label><input type="text" id="landmark"></div>
             </div>
-            
+
             <div class="form-row">
-                <div class="form-group">
-                    <label>Residence Type</label>
-                    <select id="residenceType">
-                        <option value="">Select</option>
-                        <option>Owned</option>
-                        <option>Rented</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Residence Type</label><select id="residenceType"><option>Owned</option><option>Rented</option></select></div>
             </div>
         </div>
         
         <!-- Tab 3: Family Information -->
         <div id="tab-family" class="tab-pane">
-            <h3 class="tab-title">Family Information</h3>
-            
-            <div class="form-section">
-                <h4 class="section-title">Personal/Marital Status</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Marital Status</label>
-                        <select id="maritalStatus">
-                            <option value="">Select</option>
-                            <option>Single</option>
-                            <option>Married</option>
-                            <option>Divorced</option>
-                            <option>Widowed</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Spouse Name</label>
-                        <input type="text" id="spouseName">
-                    </div>
-                    <div class="form-group">
-                        <label>Spouse Contact</label>
-                        <input type="tel" id="spouseContact">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Number of Children</label>
-                        <input type="number" id="childrenCount" min="0" value="0">
-                    </div>
-                </div>
+            <h4 class="section-title">Marital & Spouse Information</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Marital Status</label><select id="maritalStatus"><option>Single</option><option>Married</option><option>Divorced</option></select></div>
+                <div class="form-group"><label>Spouse Name</label><input type="text" id="spouseName"></div>
+                <div class="form-group"><label>Spouse Contact</label><input type="tel" id="spouseContact"></div>
             </div>
-            
-            <div class="form-section">
-                <h4 class="section-title">Parents Information</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Father's Name</label>
-                        <input type="text" id="fatherName">
-                    </div>
-                    <div class="form-group">
-                        <label>Father's Contact</label>
-                        <input type="tel" id="fatherContact">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Mother's Name</label>
-                        <input type="text" id="motherName">
-                    </div>
-                    <div class="form-group">
-                        <label>Mother's Contact</label>
-                        <input type="tel" id="motherContact">
-                    </div>
-                </div>
+
+            <h4 class="section-title">Children</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Number of Children</label><input type="number" id="childrenCount" min="0" value="0"></div>
             </div>
-            
-            <div class="form-section">
-                <h4 class="section-title">Emergency / Next of Kin Information</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Next of Kin Name</label>
-                        <input type="text" id="nextOfKinName">
-                    </div>
-                    <div class="form-group">
-                        <label>Relationship</label>
-                        <input type="text" id="kinRelationship">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Next of Kin Contact</label>
-                        <input type="tel" id="nextOfKinContact">
-                    </div>
-                    <div class="form-group">
-                        <label>Next of Kin Residence</label>
-                        <input type="text" id="nextOfKinResidence">
-                    </div>
-                </div>
+
+            <h4 class="section-title">Parents Information</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Father's Name</label><input type="text" id="fatherName"></div>
+                <div class="form-group"><label>Father's Contact</label><input type="tel" id="fatherContact"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Mother's Name</label><input type="text" id="motherName"></div>
+                <div class="form-group"><label>Mother's Contact</label><input type="tel" id="motherContact"></div>
+            </div>
+
+            <h4 class="section-title">Emergency / Next of Kin</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Next of Kin Name</label><input type="text" id="nextOfKin"></div>
+                <div class="form-group"><label>Relationship</label><input type="text" id="kinRelationship"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Next of Kin Contact</label><input type="tel" id="kinContact"></div>
+                <div class="form-group"><label>Next of Kin Residence</label><input type="text" id="kinResidence"></div>
             </div>
         </div>
         
-        <!-- Tab 4: Employment Information -->
+        <!-- Tab 4: Employment -->
         <div id="tab-employment" class="tab-pane">
-            <h3 class="tab-title">Employment Information</h3>
-            
             <div class="form-row">
-                <div class="form-group">
-                    <label>Date of Appointment</label>
-                    <input type="date" id="dateOfAppointment">
-                </div>
-                <div class="form-group">
-                    <label>Assumption Date</label>
-                    <input type="date" id="assumptionDate">
-                </div>
-                <div class="form-group">
-                    <label>Designation *</label>
-                    <input type="text" id="designation" required>
-                </div>
+                <div class="form-group"><label>Date of Appointment</label><input type="date" id="dateOfAppointment"></div>
+                <div class="form-group"><label>Assumption Date</label><input type="date" id="assumptionDate"></div>
+                <div class="form-group"><label>Designation *</label><input type="text" id="designation" required></div>
             </div>
             
             <div class="form-row">
-                <div class="form-group">
-                    <label>Department *</label>
-                    <select id="department" required>
-                        <option value="">Select</option>
-                        <option>HR</option>
-                        <option>IT</option>
-                        <option>Finance</option>
-                        <option>Operations</option>
-                        <option>Sales</option>
-                        <option>Marketing</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Employment Type *</label>
-                    <select id="employmentType" required>
-                        <option value="">Select</option>
-                        <option>Full-Time</option>
-                        <option>Part-Time</option>
-                        <option>Contract</option>
-                        <option>Temporary</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Department *</label><select id="department" required><option>HR</option><option>IT</option><option>Finance</option><option>Operations</option><option>Sales</option></select></div>
+                <div class="form-group"><label>Employment Type *</label><select id="employmentType" required><option>Full-Time</option><option>Part-Time</option><option>Contract</option></select></div>
             </div>
             
             <div class="form-row">
-                <div class="form-group">
-                    <label>SSNIT Number</label>
-                    <input type="text" id="ssnit">
-                </div>
-                <div class="form-group">
-                    <label>TIN Number</label>
-                    <input type="text" id="tinNumber">
-                </div>
+                <div class="form-group"><label>SSNIT Number</label><input type="text" id="ssnit"></div>
+                <div class="form-group"><label>TIN Number</label><input type="text" id="tinNumber"></div>
             </div>
         </div>
         
-        <!-- Tab 5: Educational Background -->
+        <!-- Tab 5: Education -->
         <div id="tab-education" class="tab-pane">
-            <h3 class="tab-title">Educational Background</h3>
-            
-            <div class="form-section">
-                <h4 class="section-title">Secondary Education</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Institution Name</label>
-                        <input type="text" id="secondaryInstitution">
-                    </div>
-                    <div class="form-group">
-                        <label>Program / Major</label>
-                        <input type="text" id="secondaryMajor">
-                    </div>
-                    <div class="form-group">
-                        <label>Year Completed</label>
-                        <input type="text" id="secondaryYear" placeholder="YYYY">
-                    </div>
-                </div>
+            <h4 class="section-title">Secondary Education</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Institution Name</label><input type="text" id="secondaryInstitution"></div>
+                <div class="form-group"><label>Program / Major</label><input type="text" id="secondaryMajor"></div>
+                <div class="form-group"><label>Year Completed</label><input type="text" id="secondaryYear"></div>
             </div>
             
-            <div class="form-section">
-                <h4 class="section-title">Tertiary Education</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Institution Name</label>
-                        <input type="text" id="tertiaryInstitution">
-                    </div>
-                    <div class="form-group">
-                        <label>Program / Major</label>
-                        <input type="text" id="tertiaryMajor">
-                    </div>
-                    <div class="form-group">
-                        <label>Year Completed</label>
-                        <input type="text" id="tertiaryYear" placeholder="YYYY">
-                    </div>
-                </div>
+            <h4 class="section-title">Tertiary Education</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Institution Name</label><input type="text" id="tertiaryInstitution"></div>
+                <div class="form-group"><label>Program / Major</label><input type="text" id="tertiaryMajor"></div>
+                <div class="form-group"><label>Year Completed</label><input type="text" id="tertiaryYear"></div>
             </div>
             
-            <div class="form-section">
-                <h4 class="section-title">Professional Qualification</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Institution Name</label>
-                        <input type="text" id="professionalInstitution">
-                    </div>
-                    <div class="form-group">
-                        <label>Certification / Qualification</label>
-                        <input type="text" id="professionalMajor">
-                    </div>
-                    <div class="form-group">
-                        <label>Year Completed</label>
-                        <input type="text" id="professionalYear" placeholder="YYYY">
-                    </div>
-                </div>
+            <h4 class="section-title">Professional Qualification</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Institution Name</label><input type="text" id="professionalInstitution"></div>
+                <div class="form-group"><label>Certification / Qualification</label><input type="text" id="professionalMajor"></div>
+                <div class="form-group"><label>Year Completed</label><input type="text" id="professionalYear"></div>
             </div>
         </div>
         
-        <!-- Tab 6: Guarantor Information -->
+        <!-- Tab 6: Guarantors -->
         <div id="tab-guarantor" class="tab-pane">
-            <h3 class="tab-title">Guarantor Information</h3>
-            
-            <div class="form-section">
-                <h4 class="section-title">Guarantor 1</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="guarantor1Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Contact Number</label>
-                        <input type="tel" id="guarantor1Contact">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="guarantor1Email">
-                    </div>
-                    <div class="form-group">
-                        <label>Residential Address</label>
-                        <input type="text" id="guarantor1Address">
-                    </div>
-                </div>
+            <h4 class="section-title">Guarantor 1</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Full Name</label><input type="text" id="guarantor1Name"></div>
+                <div class="form-group"><label>Contact Number</label><input type="tel" id="guarantor1Contact"></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="guarantor1Email"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Residential Address</label><input type="text" id="guarantor1Address"></div>
             </div>
             
-            <div class="form-section">
-                <h4 class="section-title">Guarantor 2</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="guarantor2Name">
-                    </div>
-                    <div class="form-group">
-                        <label>Contact Number</label>
-                        <input type="tel" id="guarantor2Contact">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" id="guarantor2Email">
-                    </div>
-                    <div class="form-group">
-                        <label>Residential Address</label>
-                        <input type="text" id="guarantor2Address">
-                    </div>
-                </div>
+            <h4 class="section-title">Guarantor 2</h4>
+            <div class="form-row compact">
+                <div class="form-group"><label>Full Name</label><input type="text" id="guarantor2Name"></div>
+                <div class="form-group"><label>Contact Number</label><input type="tel" id="guarantor2Contact"></div>
+                <div class="form-group"><label>Email Address</label><input type="email" id="guarantor2Email"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Residential Address</label><input type="text" id="guarantor2Address"></div>
             </div>
         </div>
         
-        <!-- Tab 7: Documents & Attachments -->
+        <!-- Tab 7: Documents -->
         <div id="tab-documents" class="tab-pane">
-            <h3 class="tab-title">Documents & Attachments</h3>
-            
-            <div class="document-upload-area" id="docUploadArea">
-                <i class="fas fa-cloud-upload-alt"></i>
-                <p>Click or drag to upload</p>
-                <small>PDF, JPG, PNG (Max 5MB)</small>
-                <input type="file" id="docFile" multiple style="display:none">
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Document Type *</label>
-                    <select id="docType" required>
-                        <option value="">Select</option>
-                        <option>Passport Photo</option>
-                        <option>National ID</option>
-                        <option>Certificates</option>
-                        <option>Degree Certificates</option>
-                        <option>Professional Certificates</option>
-                        <option>CV / Resume</option>
-                        <option>Other Supporting Documents</option>
-                    </select>
+            <div class="documents-grid">
+                <div class="document-row">
+                    <div class="document-label">Passport Photo</div>
+                    <div class="document-upload">
+                        <input type="file" id="docPassportPhoto" class="doc-file" accept="image/*">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docPassportPhoto').click()">Upload</button>
+                        <span class="file-name" id="fileName-passportPhoto"></span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>&nbsp;</label>
-                    <button type="button" class="btn btn-primary btn-sm" id="uploadBtn">Upload</button>
+
+                <div class="document-row">
+                    <div class="document-label">National ID</div>
+                    <div class="document-upload">
+                        <input type="file" id="docNationalID" class="doc-file" accept="image/*,.pdf">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docNationalID').click()">Upload</button>
+                        <span class="file-name" id="fileName-nationalID"></span>
+                    </div>
+                </div>
+
+                <div class="document-row">
+                    <div class="document-label">Certificates</div>
+                    <div class="document-upload">
+                        <input type="file" id="docCertificates" class="doc-file" accept=".pdf,.jpg,.png">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docCertificates').click()">Upload</button>
+                        <span class="file-name" id="fileName-certificates"></span>
+                    </div>
+                </div>
+
+                <div class="document-row">
+                    <div class="document-label">Degree Certificates</div>
+                    <div class="document-upload">
+                        <input type="file" id="docDegreeCertificates" class="doc-file" accept=".pdf,.jpg,.png">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docDegreeCertificates').click()">Upload</button>
+                        <span class="file-name" id="fileName-degreeCertificates"></span>
+                    </div>
+                </div>
+
+                <div class="document-row">
+                    <div class="document-label">Professional Certificates</div>
+                    <div class="document-upload">
+                        <input type="file" id="docProfessionalCertificates" class="doc-file" accept=".pdf,.jpg,.png">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docProfessionalCertificates').click()">Upload</button>
+                        <span class="file-name" id="fileName-professionalCertificates"></span>
+                    </div>
+                </div>
+
+                <div class="document-row">
+                    <div class="document-label">CV / Resume</div>
+                    <div class="document-upload">
+                        <input type="file" id="docCV" class="doc-file" accept=".pdf,.doc,.docx">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docCV').click()">Upload</button>
+                        <span class="file-name" id="fileName-cv"></span>
+                    </div>
+                </div>
+
+                <div class="document-row">
+                    <div class="document-label">Other Supporting Documents</div>
+                    <div class="document-upload">
+                        <input type="file" id="docOther" class="doc-file" accept=".pdf,.jpg,.png,.doc,.docx">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('docOther').click()">Upload</button>
+                        <span class="file-name" id="fileName-other"></span>
+                    </div>
                 </div>
             </div>
-            
-            <div id="documentsList" class="documents-list"></div>
         </div>
         
-        <!-- Form Navigation -->
         <div class="form-navigation">
             <button type="button" class="btn btn-secondary" id="prevBtn" style="display:none">← Back</button>
             <button type="button" class="btn btn-primary" id="nextBtn">Next →</button>
