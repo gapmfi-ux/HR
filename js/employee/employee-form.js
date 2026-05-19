@@ -8,7 +8,6 @@ const Employee = {
     init: async function(params = {}) {
         this.setupTabs();
         
-        // Check if we're in edit mode
         if(params.id) {
             this.isEditMode = true;
             this.employeeNumber = params.id;
@@ -20,29 +19,25 @@ const Employee = {
         }
         
         this.setupUpload();
-        
-        // Add listener for Documents tab to ensure folder exists
         this.setupFolderCreationOnTab();
     },
     
-    // NEW: Ensure folder is created when Documents tab is accessed
     setupFolderCreationOnTab: function() {
+        // When Documents tab is clicked
         const documentsTabBtn = document.querySelector('.tab-btn:last-child');
         if (documentsTabBtn) {
             documentsTabBtn.addEventListener('click', async () => {
-                // Small delay to allow tab switch
                 setTimeout(async () => {
                     await this.ensureEmployeeFolder();
                 }, 100);
             });
         }
         
-        // Also check when clicking Next button to reach Documents tab
+        // When clicking Next to reach Documents tab
         const nextBtn = document.getElementById('nextBtn');
         if (nextBtn) {
             const originalNextHandler = nextBtn.onclick;
             nextBtn.onclick = async () => {
-                // If we're moving to the last tab (Documents)
                 if (this.currentTab === this.tabs.length - 2) {
                     await this.ensureEmployeeFolder();
                 }
@@ -51,7 +46,6 @@ const Employee = {
         }
     },
     
-    // NEW: Ensure employee folder exists in Drive
     ensureEmployeeFolder: async function() {
         if (!this.employeeNumber) {
             console.warn('No employee number available');
@@ -66,8 +60,6 @@ const Employee = {
             if (result.success) {
                 if (result.created) {
                     Utils.showToast(`Created folder for ${this.employeeNumber}`, 'success');
-                } else {
-                    console.log('Folder already exists');
                 }
                 return true;
             } else {
@@ -77,12 +69,10 @@ const Employee = {
         } catch (error) {
             Utils.hideLoading();
             console.error('Error ensuring folder:', error);
-            Utils.showToast('Error creating employee folder', 'error');
             return false;
         }
     },
     
-    // Rest of your existing code...
     updateFormTitle: function() {
         const submitBtn = document.getElementById('submitBtn');
         if(submitBtn) {
@@ -236,7 +226,7 @@ const Employee = {
         const fileInput = document.getElementById(`file-${docType}`);
         const display = document.getElementById(`file-name-${docType}`);
         
-        if(fileInput.files[0]) {
+        if(fileInput.files && fileInput.files[0]) {
             const file = fileInput.files[0];
             const size = (file.size / 1024).toFixed(2);
             display.textContent = `${file.name} (${size}KB)`;
@@ -246,7 +236,7 @@ const Employee = {
     
     uploadDoc: async function(docType) {
         const fileInput = document.getElementById(`file-${docType}`);
-        if(!fileInput.files[0]) {
+        if(!fileInput.files || !fileInput.files[0]) {
             Utils.showToast('Please select a file', 'error');
             return;
         }
@@ -266,7 +256,6 @@ const Employee = {
         Utils.showLoading();
         
         try {
-            // Ensure folder exists before uploading
             await this.ensureEmployeeFolder();
             
             const docTypeMap = {
@@ -286,11 +275,18 @@ const Employee = {
             formData.append('fileName', file.name);
             formData.append('mimeType', file.type);
             
+            console.log('Uploading document:', {
+                fileName: file.name,
+                employeeNumber: this.employeeNumber,
+                documentType: docTypeMap[docType],
+                fileSize: file.size
+            });
+            
             const result = await API.uploadDocumentToDrive(formData);
             
             Utils.hideLoading();
             
-            if(result.success) {
+            if(result && result.success) {
                 Utils.showToast('Document uploaded successfully', 'success');
                 
                 if(!this.uploadedDocuments[docType]) {
@@ -298,15 +294,19 @@ const Employee = {
                 }
                 this.uploadedDocuments[docType].push({
                     fileName: file.name,
-                    documentId: result.data.documentId,
-                    fileUrl: result.data.fileUrl,
+                    documentId: result.data?.documentId,
+                    fileUrl: result.data?.fileUrl,
                     documentType: docTypeMap[docType]
                 });
                 
                 fileInput.value = '';
-                document.getElementById(`file-name-${docType}`).className = 'doc-file-name empty';
+                const display = document.getElementById(`file-name-${docType}`);
+                if(display) {
+                    display.className = 'doc-file-name empty';
+                    display.textContent = 'No file chosen';
+                }
             } else {
-                Utils.showToast('Document upload failed: ' + (result.error || 'Unknown error'), 'error');
+                Utils.showToast('Document upload failed: ' + ((result && result.error) || 'Unknown error'), 'error');
             }
         } catch(error) {
             Utils.hideLoading();
@@ -349,12 +349,18 @@ const Employee = {
             
             Utils.hideLoading();
             
-            if(result.success) {
+            if(result && result.success) {
                 const message = this.isEditMode ? 'Employee updated successfully!' : 'Employee added successfully!';
                 Utils.showToast(message, 'success');
-                setTimeout(() => Router.navigate('employee-list'), 1500);
+                setTimeout(() => {
+                    if (typeof Router !== 'undefined' && Router.navigate) {
+                        Router.navigate('employee-list');
+                    } else {
+                        window.location.href = 'employee-list.html';
+                    }
+                }, 1500);
             } else {
-                Utils.showToast(result.error || 'Failed to save employee', 'error');
+                Utils.showToast((result && result.error) || 'Failed to save employee', 'error');
             }
         } catch(e) {
             Utils.hideLoading();
