@@ -5,6 +5,9 @@ const CONFIG = {
     
     // Employee number settings
     EMPLOYEE_PREFIX: 'GAP',
+
+    MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+    ALLOWED_FILE_TYPES: ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
     
     // App settings
     APP_NAME: 'HR Management System',
