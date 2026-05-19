@@ -64,7 +64,7 @@ const API = {
     },
     
     /**
-     * Make POST request (for file uploads where JSONP doesn't work)
+     * Make POST request for JSON data
      */
     async postRequest(action, data = {}) {
         try {
@@ -88,6 +88,32 @@ const API = {
             
         } catch (error) {
             console.error(`POST Error (${action}):`, error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Upload document to Google Drive
+     */
+    async uploadDocumentToDrive(formData) {
+        try {
+            console.log('Uploading document to Drive...');
+            
+            const response = await fetch(this.baseUrl, {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('Upload result:', result);
+            return result;
+            
+        } catch (error) {
+            console.error('Document upload error:', error);
             throw error;
         }
     },
@@ -122,36 +148,6 @@ const API = {
     },
     
     // ==================== DOCUMENTS API ====================
-    // Note: File uploads use POST due to binary data
-    
-    async uploadDocument(documentData) {
-        try {
-            console.log('Uploading document...');
-            console.log('Document data keys:', Object.keys(documentData));
-            
-            const response = await fetch(this.baseUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'uploadDocument',
-                    data: documentData
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
-            console.log('Upload result:', result);
-            return result;
-        } catch (error) {
-            console.error(`Document upload error: ${error.message}`);
-            throw error;
-        }
-    },
     
     async getEmployeeDocuments(employeeNumber) {
         const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
