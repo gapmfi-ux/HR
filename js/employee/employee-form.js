@@ -3,7 +3,7 @@ const Employee = {
     tabs: ['personal', 'contact', 'family', 'employment', 'education', 'guarantor', 'documents'],
     employeeNumber: null,
     isEditMode: false,
-    uploadedDocuments: {}, // Track uploaded documents by type
+    uploadedDocuments: {},
     
     init: async function(params = {}) {
         this.setupTabs();
@@ -20,8 +20,69 @@ const Employee = {
         }
         
         this.setupUpload();
+        
+        // Add listener for Documents tab to ensure folder exists
+        this.setupFolderCreationOnTab();
     },
     
+    // NEW: Ensure folder is created when Documents tab is accessed
+    setupFolderCreationOnTab: function() {
+        const documentsTabBtn = document.querySelector('.tab-btn:last-child');
+        if (documentsTabBtn) {
+            documentsTabBtn.addEventListener('click', async () => {
+                // Small delay to allow tab switch
+                setTimeout(async () => {
+                    await this.ensureEmployeeFolder();
+                }, 100);
+            });
+        }
+        
+        // Also check when clicking Next button to reach Documents tab
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) {
+            const originalNextHandler = nextBtn.onclick;
+            nextBtn.onclick = async () => {
+                // If we're moving to the last tab (Documents)
+                if (this.currentTab === this.tabs.length - 2) {
+                    await this.ensureEmployeeFolder();
+                }
+                if (originalNextHandler) originalNextHandler();
+            };
+        }
+    },
+    
+    // NEW: Ensure employee folder exists in Drive
+    ensureEmployeeFolder: async function() {
+        if (!this.employeeNumber) {
+            console.warn('No employee number available');
+            return false;
+        }
+        
+        try {
+            Utils.showLoading();
+            const result = await API.ensureEmployeeFolder(this.employeeNumber);
+            Utils.hideLoading();
+            
+            if (result.success) {
+                if (result.created) {
+                    Utils.showToast(`Created folder for ${this.employeeNumber}`, 'success');
+                } else {
+                    console.log('Folder already exists');
+                }
+                return true;
+            } else {
+                Utils.showToast('Error creating folder: ' + (result.error || 'Unknown error'), 'error');
+                return false;
+            }
+        } catch (error) {
+            Utils.hideLoading();
+            console.error('Error ensuring folder:', error);
+            Utils.showToast('Error creating employee folder', 'error');
+            return false;
+        }
+    },
+    
+    // Rest of your existing code...
     updateFormTitle: function() {
         const submitBtn = document.getElementById('submitBtn');
         if(submitBtn) {
@@ -93,7 +154,6 @@ const Employee = {
     
     populateForm: function(data) {
         const fieldMappings = {
-            // Personal Tab
             'employeeNumber': 'employeeNumber',
             'employeeName': 'employeeName',
             'sex': 'sex',
@@ -102,8 +162,6 @@ const Employee = {
             'idNumber': 'idNumber',
             'placeOfBirth': 'placeOfBirth',
             'nationality': 'nationality',
-            
-            // Contact & Residential Tab
             'contactNumber': 'contactNumber',
             'emailAddress': 'emailAddress',
             'postalAddress': 'postalAddress',
@@ -111,8 +169,6 @@ const Employee = {
             'digitalAddress': 'digitalAddress',
             'landmark': 'landmark',
             'residenceType': 'residenceType',
-            
-            // Family Tab
             'maritalStatus': 'maritalStatus',
             'spouseName': 'spouseName',
             'spouseContact': 'spouseContact',
@@ -125,8 +181,6 @@ const Employee = {
             'kinRelationship': 'kinRelationship',
             'kinContact': 'kinContact',
             'kinResidence': 'kinResidence',
-            
-            // Employment Tab
             'dateOfAppointment': 'dateOfAppointment',
             'assumptionDate': 'assumptionDate',
             'designation': 'designation',
@@ -134,8 +188,6 @@ const Employee = {
             'employmentType': 'employmentType',
             'ssnit': 'ssnit',
             'tinNumber': 'tinNumber',
-            
-            // Education Tab
             'secondaryInstitution': 'secondaryInstitution',
             'secondaryMajor': 'secondaryMajor',
             'secondaryYear': 'secondaryYear',
@@ -145,8 +197,6 @@ const Employee = {
             'professionalInstitution': 'professionalInstitution',
             'professionalMajor': 'professionalMajor',
             'professionalYear': 'professionalYear',
-            
-            // Guarantor Tab
             'guarantor1Name': 'guarantor1Name',
             'guarantor1Contact': 'guarantor1Contact',
             'guarantor1Email': 'guarantor1Email',
@@ -203,13 +253,11 @@ const Employee = {
         
         const file = fileInput.files[0];
         
-        // Validate file size
         if(file.size > CONFIG.MAX_FILE_SIZE) {
             Utils.showToast('File size exceeds 5MB limit', 'error');
             return;
         }
         
-        // Validate file type
         if(!CONFIG.ALLOWED_FILE_TYPES.includes(file.type)) {
             Utils.showToast('File type not allowed. Use: PDF, JPG, PNG, DOC, DOCX', 'error');
             return;
@@ -218,7 +266,9 @@ const Employee = {
         Utils.showLoading();
         
         try {
-            // Map document type to category
+            // Ensure folder exists before uploading
+            await this.ensureEmployeeFolder();
+            
             const docTypeMap = {
                 'passportPhoto': 'Passport Photo',
                 'nationalId': 'National ID',
@@ -236,13 +286,6 @@ const Employee = {
             formData.append('fileName', file.name);
             formData.append('mimeType', file.type);
             
-            console.log('Uploading to Drive:', {
-                fileName: file.name,
-                employeeNumber: this.employeeNumber,
-                documentType: docTypeMap[docType],
-                fileSize: file.size
-            });
-            
             const result = await API.uploadDocumentToDrive(formData);
             
             Utils.hideLoading();
@@ -250,18 +293,16 @@ const Employee = {
             if(result.success) {
                 Utils.showToast('Document uploaded successfully', 'success');
                 
-                // Track uploaded document
                 if(!this.uploadedDocuments[docType]) {
                     this.uploadedDocuments[docType] = [];
                 }
                 this.uploadedDocuments[docType].push({
                     fileName: file.name,
-                    documentId: result.data.fileId,
+                    documentId: result.data.documentId,
                     fileUrl: result.data.fileUrl,
                     documentType: docTypeMap[docType]
                 });
                 
-                // Clear file input
                 fileInput.value = '';
                 document.getElementById(`file-name-${docType}`).className = 'doc-file-name empty';
             } else {
@@ -275,22 +316,15 @@ const Employee = {
     },
     
     submit: async function() {
-        // Collect form data
         const data = {};
         const fields = [
-            // Personal
             'employeeNumber', 'employeeName', 'sex', 'dob', 'idType', 'idNumber', 'placeOfBirth', 'nationality',
-            // Contact
             'contactNumber', 'emailAddress', 'postalAddress', 'residence', 'digitalAddress', 'landmark', 'residenceType',
-            // Family
             'maritalStatus', 'spouseName', 'spouseContact', 'childrenCount', 'fatherName', 'fatherContact',
             'motherName', 'motherContact', 'nextOfKinName', 'kinRelationship', 'kinContact', 'kinResidence',
-            // Employment
             'dateOfAppointment', 'assumptionDate', 'designation', 'department', 'employmentType', 'ssnit', 'tinNumber',
-            // Education
             'secondaryInstitution', 'secondaryMajor', 'secondaryYear', 'tertiaryInstitution', 'tertiaryMajor',
             'tertiaryYear', 'professionalInstitution', 'professionalMajor', 'professionalYear',
-            // Guarantor
             'guarantor1Name', 'guarantor1Contact', 'guarantor1Email', 'guarantor1Address',
             'guarantor2Name', 'guarantor2Contact', 'guarantor2Email', 'guarantor2Address'
         ];
