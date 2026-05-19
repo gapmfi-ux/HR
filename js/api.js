@@ -68,14 +68,15 @@ const API = {
      */
     async postRequest(action, data = {}) {
         try {
-            const formData = new FormData();
-            formData.append('action', action);
-            formData.append('data', JSON.stringify(data));
-            
             const response = await fetch(this.baseUrl, {
                 method: 'POST',
-                mode: 'cors',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: action,
+                    data: data
+                })
             });
             
             if (!response.ok) {
@@ -94,7 +95,7 @@ const API = {
     // ==================== EMPLOYEE API ====================
     
     async saveEmployee(employeeData) {
-        return this.jsonpRequest('saveEmployee', employeeData);
+        return this.postRequest('saveEmployee', employeeData);
     },
     
     async getEmployeeList() {
@@ -108,7 +109,7 @@ const API = {
     },
     
     async updateEmployee(employeeData) {
-        return this.jsonpRequest('updateEmployee', employeeData);
+        return this.postRequest('updateEmployee', employeeData);
     },
     
     async deleteEmployee(employeeNumber) {
@@ -121,11 +122,11 @@ const API = {
     },
     
     // ==================== DOCUMENTS API ====================
-    // Note: File uploads use POST to handle binary data
+    // Note: File uploads use POST due to binary data
     
     async uploadDocument(documentData) {
         try {
-            console.log('Uploading document via POST...');
+            console.log('Uploading document...');
             console.log('Document data keys:', Object.keys(documentData));
             
             const response = await fetch(this.baseUrl, {
@@ -254,3 +255,5 @@ const API = {
         return 'GAP' + String(nextNum).padStart(4, '0');
     }
 };
+
+window.API = API;
