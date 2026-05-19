@@ -157,7 +157,10 @@ const API = {
     async deleteDocument(documentId) {
         return this.jsonpRequest('deleteDocument', { documentId });
     },
-    
+   
+async ensureEmployeeFolder(employeeNumber) {
+    return this.jsonpRequest('ensureEmployeeFolder', { employeeNumber });
+},
     // ==================== PAYROLL API ====================
     
     async savePayroll(payrollData) {
