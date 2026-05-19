@@ -87,7 +87,7 @@ const Employee = {
         const fieldMappings = {
             // Personal Tab
             'employeeNumber': 'employeeNumber',
-            'employeeName': 'name',
+            'employeeName': 'employeeName',
             'sex': 'sex',
             'dob': 'dob',
             'idType': 'idType',
@@ -96,7 +96,7 @@ const Employee = {
             'nationality': 'nationality',
             
             // Contact & Residential Tab
-            'contactNumber': 'contactTelephone',
+            'contactNumber': 'contactNumber',
             'emailAddress': 'emailAddress',
             'postalAddress': 'postalAddress',
             'residence': 'residence',
@@ -119,12 +119,12 @@ const Employee = {
             'kinResidence': 'kinResidence',
             
             // Employment Tab
-            'dateOfAppointment': 'appointmentDate',
+            'dateOfAppointment': 'dateOfAppointment',
             'assumptionDate': 'assumptionDate',
             'designation': 'designation',
             'department': 'department',
             'employmentType': 'employmentType',
-            'ssnit': 'ssnitNumber',
+            'ssnit': 'ssnit',
             'tinNumber': 'tinNumber',
             
             // Education Tab
@@ -182,60 +182,93 @@ const Employee = {
             const file = fileInput.files[0];
             const size = (file.size / 1024).toFixed(2);
             display.textContent = `${file.name} (${size}KB)`;
-            display.style.color = '#22c55e';
+            display.classList.remove('empty');
+            display.classList.add('uploaded');
         }
     },
     
-   uploadDoc: async function() {
-    const file = document.getElementById('docFile').files[0];
-    if(!file) return Utils.showToast('Select a file', 'error');
-    
-    Utils.showLoading();
-    
-    try {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                // Extract base64 content (remove data:image/png;base64, prefix)
-                const base64Content = e.target.result.split(',')[1];
-                
-                const documentData = {
-                    employeeNumber: this.employeeNumber,
-                    documentType: document.getElementById('docType').value,
-                    fileName: file.name,
-                    fileContent: base64Content,
-                    mimeType: file.type
-                };
-                
-                Logger.log('Sending document upload request...');
-                const result = await API.uploadDocument(documentData);
-                
-                Utils.hideLoading();
-                
-                if(result.success) {
-                    Utils.showToast('Document uploaded successfully', 'success');
-                    document.getElementById('docFile').value = ''; // Clear file input
-                    // Refresh document list if you have one
-                } else {
-                    Utils.showToast('Document upload failed: ' + (result.error || 'Unknown error'), 'error');
+    uploadDoc: async function(docType) {
+        const fileInput = document.getElementById(`file-${docType}`);
+        const file = fileInput.files[0];
+        
+        if(!file) {
+            Utils.showToast('Select a file first', 'error');
+            return;
+        }
+        
+        // Validate file size (5MB)
+        if(file.size > 5 * 1024 * 1024) {
+            Utils.showToast('File size must be less than 5MB', 'error');
+            return;
+        }
+        
+        Utils.showLoading();
+        
+        try {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    // Extract base64 content (remove data:image/png;base64, prefix)
+                    const base64Content = e.target.result.split(',')[1];
+                    
+                    // Map document type to category
+                    const docTypeMap = {
+                        'passportPhoto': 'Passport Photo',
+                        'nationalId': 'National ID',
+                        'certificates': 'Certificates',
+                        'degreeCerts': 'Degree Certificates',
+                        'professionalCerts': 'Professional Certificates',
+                        'cv': 'CV / Resume',
+                        'otherDocs': 'Other Documents'
+                    };
+                    
+                    const documentData = {
+                        employeeNumber: this.employeeNumber,
+                        documentType: docTypeMap[docType] || docType,
+                        fileName: file.name,
+                        fileContent: base64Content,
+                        mimeType: file.type
+                    };
+                    
+                    Logger.log('Sending document upload request...');
+                    const result = await API.uploadDocument(documentData);
+                    
+                    Utils.hideLoading();
+                    
+                    if(result.success) {
+                        Utils.showToast('Document uploaded successfully', 'success');
+                        fileInput.value = ''; // Clear file input
+                        
+                        // Update display
+                        const display = document.getElementById(`file-name-${docType}`);
+                        if(display) {
+                            display.textContent = 'Uploaded ✓';
+                            display.classList.add('uploaded');
+                        }
+                        
+                        // Track uploaded document
+                        this.uploadedDocuments[docType] = result.data;
+                    } else {
+                        Utils.showToast('Document upload failed: ' + (result.error || 'Unknown error'), 'error');
+                    }
+                } catch(error) {
+                    Utils.hideLoading();
+                    Utils.showToast('Error uploading document: ' + error.message, 'error');
+                    console.error('Upload error:', error);
                 }
-            } catch(error) {
+            };
+            
+            reader.onerror = () => {
                 Utils.hideLoading();
-                Utils.showToast('Error uploading document: ' + error.message, 'error');
-                console.error('Upload error:', error);
-            }
-        };
-        
-        reader.onerror = () => {
+                Utils.showToast('Error reading file', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+        } catch(error) {
             Utils.hideLoading();
-            Utils.showToast('Error reading file', 'error');
-        };
-        
-        reader.readAsDataURL(file);
-    } catch(error) {
-        Utils.hideLoading();
-        Utils.showToast('Error: ' + error.message, 'error');
-        console.error(error);
+            Utils.showToast('Error: ' + error.message, 'error');
+            console.error(error);
+        }
     },
     
     submit: async function() {
