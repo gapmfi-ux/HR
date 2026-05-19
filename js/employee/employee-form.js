@@ -3,7 +3,7 @@ const Employee = {
     tabs: ['personal', 'contact', 'family', 'employment', 'education', 'guarantor', 'documents'],
     employeeNumber: null,
     isEditMode: false,
-    uploadedDocuments: {}, // Track uploaded documents by type
+    uploadedDocuments: {}, 
     
     init: async function(params = {}) {
         this.setupTabs();
