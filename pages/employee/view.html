@@ -6,7 +6,7 @@
     </div>
     
     <div class="modal-body">
-      <!-- Employee Header Card - Name, Number, Status (No Labels) -->
+      <!-- Employee Header Card -->
       <div class="employee-header-card">
         <div class="employee-name-large" id="empName"></div>
         <div class="employee-meta-row">
@@ -15,7 +15,7 @@
         </div>
       </div>
 
-      <!-- Personal Details -->
+      <!-- Personal Details Section -->
       <div class="section compact">
         <div class="section-header compact">
           <h3><i class="fas fa-user"></i> Personal Details</h3>
@@ -29,25 +29,52 @@
             <div class="info-item"><span class="label">Date of Birth:</span><span class="value highlight-value" id="empDob"></span></div>
             <div class="info-item"><span class="label">Age:</span><span class="value highlight-value" id="empAge"></span></div>
             <div class="info-item"><span class="label">Place of Birth:</span><span class="value highlight-value" id="empPlaceOfBirth"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact & Residential Section -->
+      <div class="section compact">
+        <div class="section-header compact">
+          <h3><i class="fas fa-map-marker-alt"></i> Contact & Residential</h3>
+        </div>
+        <div class="section-body compact">
+          <div class="info-grid compact">
             <div class="info-item"><span class="label">Contact:</span><span class="value highlight-value" id="empContactTelephone"></span></div>
             <div class="info-item"><span class="label">Email:</span><span class="value highlight-value" id="empEmail"></span></div>
+            <div class="info-item"><span class="label">Postal Address:</span><span class="value highlight-value" id="empPostalAddress"></span></div>
             <div class="info-item"><span class="label">Residence:</span><span class="value highlight-value" id="empPlaceOfResidence"></span></div>
             <div class="info-item"><span class="label">Residence Type:</span><span class="value highlight-value" id="empResidenceType"></span></div>
             <div class="info-item"><span class="label">Digital Address:</span><span class="value highlight-value" id="empDigitalAddress"></span></div>
             <div class="info-item"><span class="label">Landmark:</span><span class="value highlight-value" id="empLandmark"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Family Details Section -->
+      <div class="section compact">
+        <div class="section-header compact">
+          <h3><i class="fas fa-heart"></i> Family Information</h3>
+        </div>
+        <div class="section-body compact">
+          <div class="info-grid compact">
             <div class="info-item"><span class="label">Marital Status:</span><span class="value highlight-value" id="empMaritalStatus"></span></div>
             <div class="info-item"><span class="label">Spouse:</span><span class="value highlight-value" id="empSpouseName"></span></div>
+            <div class="info-item"><span class="label">Spouse Contact:</span><span class="value highlight-value" id="empSpouseContact"></span></div>
             <div class="info-item"><span class="label">Children:</span><span class="value highlight-value" id="empChildren"></span></div>
             <div class="info-item"><span class="label">Father:</span><span class="value highlight-value" id="empFatherName"></span></div>
+            <div class="info-item"><span class="label">Father Contact:</span><span class="value highlight-value" id="empFatherContact"></span></div>
             <div class="info-item"><span class="label">Mother:</span><span class="value highlight-value" id="empMotherName"></span></div>
+            <div class="info-item"><span class="label">Mother Contact:</span><span class="value highlight-value" id="empMotherContact"></span></div>
             <div class="info-item"><span class="label">Next of Kin:</span><span class="value highlight-value" id="empNextOfKin"></span></div>
+            <div class="info-item"><span class="label">Relationship:</span><span class="value highlight-value" id="empKinRelationship"></span></div>
             <div class="info-item"><span class="label">Kin Contact:</span><span class="value highlight-value" id="empKinContact"></span></div>
             <div class="info-item"><span class="label">Kin Residence:</span><span class="value highlight-value" id="empKinResidence"></span></div>
           </div>
         </div>
       </div>
 
-      <!-- Employment Details -->
+      <!-- Employment Details Section -->
       <div class="section compact">
         <div class="section-header compact">
           <h3><i class="fas fa-briefcase"></i> Employment Details</h3>
@@ -66,14 +93,14 @@
         </div>
       </div>
 
-      <!-- Education Details -->
+      <!-- Education Details Section -->
       <div class="section compact">
         <div class="section-header compact">
           <h3><i class="fas fa-graduation-cap"></i> Education Details</h3>
         </div>
         <div class="section-body compact">
           <div class="education-group compact">
-            <h4>Secondary</h4>
+            <h4>Secondary Education</h4>
             <div class="info-grid compact three-col">
               <div class="info-item"><span class="label">Institution:</span><span class="value highlight-value" id="secInstitution"></span></div>
               <div class="info-item"><span class="label">Major:</span><span class="value highlight-value" id="secMajor"></span></div>
@@ -81,7 +108,7 @@
             </div>
           </div>
           <div class="education-group compact">
-            <h4>Tertiary</h4>
+            <h4>Tertiary Education</h4>
             <div class="info-grid compact three-col">
               <div class="info-item"><span class="label">Institution:</span><span class="value highlight-value" id="terInstitution"></span></div>
               <div class="info-item"><span class="label">Major:</span><span class="value highlight-value" id="terMajor"></span></div>
@@ -89,7 +116,7 @@
             </div>
           </div>
           <div class="education-group compact">
-            <h4>Professional</h4>
+            <h4>Professional Qualification</h4>
             <div class="info-grid compact three-col">
               <div class="info-item"><span class="label">Institution:</span><span class="value highlight-value" id="profInstitution"></span></div>
               <div class="info-item"><span class="label">Certification:</span><span class="value highlight-value" id="profMajor"></span></div>
@@ -99,7 +126,7 @@
         </div>
       </div>
 
-      <!-- Guarantor Details -->
+      <!-- Guarantor Details Section -->
       <div class="section compact">
         <div class="section-header compact">
           <h3><i class="fas fa-handshake"></i> Guarantor Details</h3>
@@ -119,6 +146,21 @@
               <div class="info-item"><span class="label">Contact:</span><span class="value" id="guarantor2Contact"></span></div>
               <div class="info-item"><span class="label">Email:</span><span class="value" id="guarantor2Email"></span></div>
               <div class="info-item"><span class="label">Address:</span><span class="value" id="guarantor2Address"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documents Section -->
+      <div class="section compact">
+        <div class="section-header compact">
+          <h3><i class="fas fa-folder-open"></i> Uploaded Documents</h3>
+        </div>
+        <div class="section-body compact">
+          <div id="documentsContainer">
+            <div class="empty-state-small">
+              <i class="fas fa-inbox"></i>
+              <p>No documents uploaded</p>
             </div>
           </div>
         </div>
