@@ -10,19 +10,16 @@ const API = {
     
     /**
      * Make JSONP request (bypasses CORS completely)
-     * This is the primary method for all API calls
      */
     jsonpRequest: function(action, data = {}, timeout = 30000) {
         return new Promise((resolve, reject) => {
             const callbackName = `jsonp_callback_${++this.callbackCounter}_${Date.now()}`;
             const timeoutId = setTimeout(() => {
-                // Clean up on timeout
                 delete this.callbacks[callbackName];
                 delete window[callbackName];
                 reject(new Error(`Request timeout for action: ${action}`));
             }, timeout);
             
-            // Store callback
             this.callbacks[callbackName] = (result) => {
                 clearTimeout(timeoutId);
                 delete this.callbacks[callbackName];
@@ -35,22 +32,18 @@ const API = {
                 }
             };
             
-            // Create global callback function
             window[callbackName] = (response) => {
                 if (this.callbacks[callbackName]) {
                     this.callbacks[callbackName](response);
                 }
             };
             
-            // Build URL with parameters
             let url = `${this.baseUrl}?callback=${callbackName}&action=${action}`;
             
-            // Add data as JSON string parameter
             if (data && Object.keys(data).length > 0) {
                 url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
             }
             
-            // Create and inject script tag
             const script = document.createElement('script');
             script.src = url;
             script.onerror = () => {
@@ -64,64 +57,104 @@ const API = {
     },
     
     /**
-     * Make POST request for JSON data
+     * Upload document using iframe method (avoids CORS completely)
      */
-    async postRequest(action, data = {}) {
-        try {
-            const response = await fetch(this.baseUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: action,
-                    data: data
-                })
-            });
+    uploadDocumentToDrive: function(formData) {
+        return new Promise((resolve, reject) => {
+            console.log('Uploading document to Drive using iframe method...');
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            const iframeId = `upload_iframe_${Date.now()}_${Math.random()}`;
+            const iframe = document.createElement('iframe');
+            iframe.id = iframeId;
+            iframe.name = iframeId;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            // Create form that targets the iframe
+            const uploadForm = document.createElement('form');
+            uploadForm.method = 'POST';
+            uploadForm.action = this.baseUrl;
+            uploadForm.target = iframeId;
+            uploadForm.enctype = 'multipart/form-data';
+            
+            // Add action parameter
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'uploadDocument';
+            uploadForm.appendChild(actionInput);
+            
+            // Add all form data entries
+            for (let pair of formData.entries()) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = pair[0];
+                input.value = pair[1];
+                uploadForm.appendChild(input);
             }
             
-            const result = await response.json();
-            return result;
+            // Handle iframe load (response)
+            iframe.onload = () => {
+                try {
+                    // Get response from iframe
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    let responseText = '';
+                    
+                    // Try to get response text
+                    if (iframeDoc.body) {
+                        responseText = iframeDoc.body.innerText || iframeDoc.body.textContent || '';
+                    }
+                    
+                    console.log('Response from server:', responseText);
+                    
+                    if (responseText) {
+                        // Try to parse as JSON
+                        const result = JSON.parse(responseText);
+                        if (result.success) {
+                            resolve(result);
+                        } else {
+                            reject(new Error(result.error || 'Upload failed'));
+                        }
+                    } else {
+                        reject(new Error('Empty response from server'));
+                    }
+                } catch (error) {
+                    console.error('Error parsing response:', error);
+                    reject(new Error('Failed to parse server response: ' + error.message));
+                } finally {
+                    // Clean up iframe
+                    setTimeout(() => {
+                        if (document.body.contains(iframe)) {
+                            document.body.removeChild(iframe);
+                        }
+                    }, 1000);
+                }
+            };
             
-        } catch (error) {
-            console.error(`POST Error (${action}):`, error);
-            throw error;
-        }
-    },
-    
-    /**
-     * Upload document to Google Drive
-     */
-    async uploadDocumentToDrive(formData) {
-        try {
-            console.log('Uploading document to Drive...');
+            iframe.onerror = () => {
+                reject(new Error('Iframe failed to load'));
+                if (document.body.contains(iframe)) {
+                    document.body.removeChild(iframe);
+                }
+            };
             
-            const response = await fetch(this.baseUrl, {
-                method: 'POST',
-                body: formData
-            });
+            // Submit the form
+            document.body.appendChild(uploadForm);
+            uploadForm.submit();
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
-            console.log('Upload result:', result);
-            return result;
-            
-        } catch (error) {
-            console.error('Document upload error:', error);
-            throw error;
-        }
+            // Remove form after submission
+            setTimeout(() => {
+                if (uploadForm.parentNode) {
+                    document.body.removeChild(uploadForm);
+                }
+            }, 100);
+        });
     },
     
     // ==================== EMPLOYEE API ====================
     
     async saveEmployee(employeeData) {
-        return this.postRequest('saveEmployee', employeeData);
+        return this.jsonpRequest('saveEmployee', employeeData);
     },
     
     async getEmployeeList() {
@@ -135,7 +168,7 @@ const API = {
     },
     
     async updateEmployee(employeeData) {
-        return this.postRequest('updateEmployee', employeeData);
+        return this.jsonpRequest('updateEmployee', employeeData);
     },
     
     async deleteEmployee(employeeNumber) {
@@ -149,6 +182,10 @@ const API = {
     
     // ==================== DOCUMENTS API ====================
     
+    async ensureEmployeeFolder(employeeNumber) {
+        return this.jsonpRequest('ensureEmployeeFolder', { employeeNumber });
+    },
+    
     async getEmployeeDocuments(employeeNumber) {
         const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
         return result.documents || [];
@@ -157,10 +194,7 @@ const API = {
     async deleteDocument(documentId) {
         return this.jsonpRequest('deleteDocument', { documentId });
     },
-   
-async ensureEmployeeFolder(employeeNumber) {
-    return this.jsonpRequest('ensureEmployeeFolder', { employeeNumber });
-},
+    
     // ==================== PAYROLL API ====================
     
     async savePayroll(payrollData) {
