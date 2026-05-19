@@ -7,7 +7,7 @@ const EmployeeList = {
         await this.load();
         this.populateDesignationFilter();
         this.setupEventListeners();
-    },
+    }, 
     
     setupEventListeners: function() {
         const searchInput = document.getElementById('searchInput');
