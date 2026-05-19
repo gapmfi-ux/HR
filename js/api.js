@@ -124,18 +124,44 @@ const API = {
     // ==================== DOCUMENTS API ====================
     // Note: File uploads require POST due to binary data
     
-    async uploadDocument(documentData) {
-        return this.postRequest('uploadDocument', documentData);
-    },
-    
-    async getEmployeeDocuments(employeeNumber) {
-        const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
-        return result.documents || [];
-    },
-    
-    async deleteDocument(documentId) {
-        return this.jsonpRequest('deleteDocument', { documentId });
-    },
+      async uploadDocument(documentData) {
+    try {
+      Logger.log('Uploading document...');
+      Logger.log('Document data:', documentData);
+      
+      const response = await fetch(this.baseURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'uploadDocument',
+          data: documentData
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      Logger.log('Upload result:', result);
+      return result;
+    } catch (error) {
+      Logger.log(`Document upload error: ${error.message}`);
+      console.error('Document upload error:', error);
+      throw error;
+    }
+  },
+  
+  async getEmployeeDocuments(employeeNumber) {
+    const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
+    return result.documents || [];
+  },
+  
+  async deleteDocument(documentId) {
+    return this.jsonpRequest('deleteDocument', { documentId });
+  },
     
     // ==================== PAYROLL API ====================
     
