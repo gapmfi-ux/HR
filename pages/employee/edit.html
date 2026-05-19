@@ -1,91 +1,274 @@
 <div class="form-container">
     <div class="form-tabs">
         <button class="tab-btn active" data-tab="personal"><i class="fas fa-user"></i><span>Personal</span></button>
+        <button class="tab-btn" data-tab="contact"><i class="fas fa-phone"></i><span>Contact</span></button>
+        <button class="tab-btn" data-tab="family"><i class="fas fa-home"></i><span>Family</span></button>
         <button class="tab-btn" data-tab="employment"><i class="fas fa-briefcase"></i><span>Employment</span></button>
         <button class="tab-btn" data-tab="education"><i class="fas fa-graduation-cap"></i><span>Education</span></button>
-        <button class="tab-btn" data-tab="guarantor"><i class="fas fa-handshake"></i><span>Guarantors</span></button>
-        <button class="tab-btn" data-tab="documents"><i class="fas fa-paperclip"></i><span>Docs</span></button>
+        <button class="tab-btn" data-tab="guarantor"><i class="fas fa-handshake"></i><span>Guarantor</span></button>
+        <button class="tab-btn" data-tab="documents"><i class="fas fa-paperclip"></i><span>Documents</span></button>
     </div>
     
     <form id="employeeForm" onsubmit="return false;">
-        <!-- Tab 1: Personal -->
+        <!-- Tab 1: Personal Information -->
         <div id="tab-personal" class="tab-pane active">
-            <div class="form-row"><div class="form-group"><label>Employee Number</label><input type="text" id="employeeNumber" readonly></div>
-            <div class="form-group"><label>Full Name *</label><input type="text" id="employeeName" required></div>
-            <div class="form-group"><label>Sex *</label><select id="sex" required><option value="">Select</option><option>Male</option><option>Female</option></select></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Employee Number</label><input type="text" id="employeeNumber" readonly></div>
+                <div class="form-group"><label>Full Name *</label><input type="text" id="employeeName" required></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Nationality *</label><input type="text" id="nationality" required></div>
-            <div class="form-group"><label>ID Type *</label><select id="idType" required><option>National ID</option><option>Passport</option><option>Voter ID</option></select></div>
-            <div class="form-group"><label>ID Number *</label><input type="text" id="idNumber" required></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Sex *</label><select id="sex" required><option value="">Select</option><option>Male</option><option>Female</option></select></div>
+                <div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Date of Birth *</label><input type="date" id="dob" required></div>
-            <div class="form-group"><label>Place of Birth *</label><input type="text" id="placeOfBirth" required></div>
-            <div class="form-group"><label>Contact *</label><input type="tel" id="contactNumber" required></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>ID Type *</label><select id="idType" required><option>National ID</option><option>Passport</option><option>Voter ID</option></select></div>
+                <div class="form-group"><label>ID Number *</label><input type="text" id="idNumber" required></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Residence</label><input type="text" id="residence"></div>
-            <div class="form-group"><label>Digital Address</label><input type="text" id="digitalAddress"></div>
-            <div class="form-group"><label>Landmark</label><input type="text" id="landmark"></div></div>
-            
-            <div class="form-row"><div class="form-group"><label>Residence Type</label><select id="residenceType"><option>Owned</option><option>Rented</option></select></div>
-            <div class="form-group"><label>Marital Status</label><select id="maritalStatus"><option>Single</option><option>Married</option><option>Divorced</option></select></div>
-            <div class="form-group"><label>Spouse Name</label><input type="text" id="spouseName"></div></div>
-            
-            <div class="form-row"><div class="form-group"><label>Children</label><input type="number" id="childrenCount" min="0" value="0"></div>
-            <div class="form-group"><label>Father's Name</label><input type="text" id="fatherName"></div>
-            <div class="form-group"><label>Mother's Name</label><input type="text" id="motherName"></div></div>
-            
-            <div class="form-row"><div class="form-group"><label>Next of Kin</label><input type="text" id="nextOfKin"></div>
-            <div class="form-group"><label>Kin Contact</label><input type="tel" id="kinContact"></div>
-            <div class="form-group"><label>Kin Residence</label><input type="text" id="kinResidence"></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Place of Birth *</label><input type="text" id="placeOfBirth" required></div>
+                <div class="form-group"><label>Nationality *</label><input type="text" id="nationality" required></div>
+            </div>
         </div>
         
-        <!-- Tab 2: Employment -->
+        <!-- Tab 2: Contact & Residential -->
+        <div id="tab-contact" class="tab-pane">
+            <div class="section-title">Contact Information</div>
+            <div class="form-row">
+                <div class="form-group"><label>Contact Number *</label><input type="tel" id="contactNumber" required></div>
+                <div class="form-group"><label>Email Address *</label><input type="email" id="emailAddress" required></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group"><label>Postal Address</label><input type="text" id="postalAddress"></div>
+            </div>
+            
+            <div class="section-title">Residential Information</div>
+            <div class="form-row">
+                <div class="form-group"><label>Residence</label><input type="text" id="residence"></div>
+                <div class="form-group"><label>Digital Address</label><input type="text" id="digitalAddress"></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group"><label>Landmark</label><input type="text" id="landmark"></div>
+                <div class="form-group"><label>Residence Type</label><select id="residenceType"><option>Owned</option><option>Rented</option></select></div>
+            </div>
+        </div>
+        
+        <!-- Tab 3: Family Information -->
+        <div id="tab-family" class="tab-pane">
+            <div class="section-title">Marital & Spouse Information</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Marital Status</label><select id="maritalStatus"><option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option></select></div>
+                <div class="form-group"><label>Spouse Name</label><input type="text" id="spouseName"></div>
+                <div class="form-group"><label>Spouse Contact</label><input type="tel" id="spouseContact"></div>
+            </div>
+            
+            <div class="section-title">Children Information</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Number of Children</label><input type="number" id="childrenCount" min="0" value="0"></div>
+            </div>
+            
+            <div class="section-title">Parents Information</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Father's Name</label><input type="text" id="fatherName"></div>
+                <div class="form-group"><label>Father's Contact</label><input type="tel" id="fatherContact"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Mother's Name</label><input type="text" id="motherName"></div>
+                <div class="form-group"><label>Mother's Contact</label><input type="tel" id="motherContact"></div>
+            </div>
+            
+            <div class="section-title">Emergency / Next of Kin Information</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Next of Kin Name</label><input type="text" id="nextOfKinName"></div>
+                <div class="form-group"><label>Relationship</label><input type="text" id="kinRelationship"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Next of Kin Contact</label><input type="tel" id="kinContact"></div>
+                <div class="form-group"><label>Next of Kin Residence</label><input type="text" id="kinResidence"></div>
+            </div>
+        </div>
+        
+        <!-- Tab 4: Employment -->
         <div id="tab-employment" class="tab-pane">
-            <div class="form-row"><div class="form-group"><label>Date of Appointment</label><input type="date" id="dateOfAppointment"></div>
-            <div class="form-group"><label>Assumption Date</label><input type="date" id="assumptionDate"></div>
-            <div class="form-group"><label>Designation *</label><input type="text" id="designation" required></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Date of Appointment</label><input type="date" id="dateOfAppointment"></div>
+                <div class="form-group"><label>Assumption Date</label><input type="date" id="assumptionDate"></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Department *</label><select id="department" required><option>HR</option><option>IT</option><option>Finance</option><option>Operations</option><option>Sales</option></select></div>
-            <div class="form-group"><label>Employment Type *</label><select id="employmentType" required><option>Full-Time</option><option>Part-Time</option><option>Contract</option></select></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Designation *</label><input type="text" id="designation" required></div>
+                <div class="form-group"><label>Department *</label><select id="department" required><option>Select Department</option><option>HR</option><option>IT</option><option>Finance</option><option>Operations</option><option>Sales</option></select></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>SSNIT Number</label><input type="text" id="ssnit"></div>
-            <div class="form-group"><label>TIN Number</label><input type="text" id="tinNumber"></div></div>
+            <div class="form-row">
+                <div class="form-group"><label>Employment Type *</label><select id="employmentType" required><option>Select Type</option><option>Full-Time</option><option>Part-Time</option><option>Contract</option></select></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group"><label>SSNIT Number</label><input type="text" id="ssnit"></div>
+                <div class="form-group"><label>TIN Number</label><input type="text" id="tinNumber"></div>
+            </div>
         </div>
         
-        <!-- Tab 3: Education -->
+        <!-- Tab 5: Education -->
         <div id="tab-education" class="tab-pane">
-            <div class="form-row"><div class="form-group"><label>Secondary Institution</label><input type="text" id="secondaryInstitution"></div>
-            <div class="form-group"><label>Major</label><input type="text" id="secondaryMajor"></div>
-            <div class="form-group"><label>Year</label><input type="text" id="secondaryYear"></div></div>
+            <div class="section-title">Secondary Education</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Institution Name</label><input type="text" id="secondaryInstitution"></div>
+                <div class="form-group"><label>Program / Major</label><input type="text" id="secondaryMajor"></div>
+                <div class="form-group"><label>Year Completed</label><input type="text" id="secondaryYear" placeholder="e.g., 2015"></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Tertiary Institution</label><input type="text" id="tertiaryInstitution"></div>
-            <div class="form-group"><label>Major</label><input type="text" id="tertiaryMajor"></div>
-            <div class="form-group"><label>Year</label><input type="text" id="tertiaryYear"></div></div>
+            <div class="section-title">Tertiary Education</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Institution Name</label><input type="text" id="tertiaryInstitution"></div>
+                <div class="form-group"><label>Program / Major</label><input type="text" id="tertiaryMajor"></div>
+                <div class="form-group"><label>Year Completed</label><input type="text" id="tertiaryYear" placeholder="e.g., 2019"></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Professional Institution</label><input type="text" id="professionalInstitution"></div>
-            <div class="form-group"><label>Certification</label><input type="text" id="professionalMajor"></div>
-            <div class="form-group"><label>Year</label><input type="text" id="professionalYear"></div></div>
+            <div class="section-title">Professional Qualification</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Institution Name</label><input type="text" id="professionalInstitution"></div>
+                <div class="form-group"><label>Certification / Qualification</label><input type="text" id="professionalMajor"></div>
+                <div class="form-group"><label>Year Completed</label><input type="text" id="professionalYear" placeholder="e.g., 2020"></div>
+            </div>
         </div>
         
-        <!-- Tab 4: Guarantors -->
+        <!-- Tab 6: Guarantors -->
         <div id="tab-guarantor" class="tab-pane">
-            <div class="form-row"><div class="form-group"><label>Guarantor 1 Name</label><input type="text" id="guarantor1Name"></div>
-            <div class="form-group"><label>Contact</label><input type="tel" id="guarantor1Contact"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="guarantor1Email"></div></div>
-            <div class="form-group"><label>Address</label><input type="text" id="guarantor1Address"></div>
+            <div class="section-title">Guarantor 1</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Full Name</label><input type="text" id="guarantor1Name"></div>
+                <div class="form-group"><label>Contact Number</label><input type="tel" id="guarantor1Contact"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Email Address</label><input type="email" id="guarantor1Email"></div>
+                <div class="form-group"><label>Residential Address</label><input type="text" id="guarantor1Address"></div>
+            </div>
             
-            <div class="form-row"><div class="form-group"><label>Guarantor 2 Name</label><input type="text" id="guarantor2Name"></div>
-            <div class="form-group"><label>Contact</label><input type="tel" id="guarantor2Contact"></div>
-            <div class="form-group"><label>Email</label><input type="email" id="guarantor2Email"></div></div>
-            <div class="form-group"><label>Address</label><input type="text" id="guarantor2Address"></div>
+            <div class="section-title">Guarantor 2</div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Full Name</label><input type="text" id="guarantor2Name"></div>
+                <div class="form-group"><label>Contact Number</label><input type="tel" id="guarantor2Contact"></div>
+            </div>
+            <div class="form-row compact">
+                <div class="form-group"><label>Email Address</label><input type="email" id="guarantor2Email"></div>
+                <div class="form-group"><label>Residential Address</label><input type="text" id="guarantor2Address"></div>
+            </div>
         </div>
         
-        <!-- Tab 5: Documents -->
+        <!-- Tab 7: Documents -->
         <div id="tab-documents" class="tab-pane">
-            <div class="document-upload-area" id="docUploadArea"><i class="fas fa-cloud-upload-alt"></i><p>Click or drag to upload</p><small>PDF, JPG, PNG (Max 5MB)</small><input type="file" id="docFile" multiple style="display:none"></div>
-            <div class="form-row"><div class="form-group"><label>Document Type</label><select id="docType"><option>ID</option><option>Certificate</option><option>Degree</option><option>Professional</option><option>CV</option></select></div>
-            <div class="form-group"><label>&nbsp;</label><button type="button" class="btn btn-primary btn-sm" id="uploadBtn">Upload</button></div></div>
-            <div id="documentsList"></div>
+            <div class="documents-grid">
+                <!-- Passport Photo -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-image doc-card-icon"></i>
+                        Passport Photo
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-passportPhoto">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-passportPhoto" class="doc-file-input" accept="image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-passportPhoto"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-passportPhoto">Upload</button>
+                </div>
+                
+                <!-- National ID -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-id-card doc-card-icon"></i>
+                        National ID
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-nationalId">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-nationalId" class="doc-file-input" accept="image/*,.pdf">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-nationalId"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-nationalId">Upload</button>
+                </div>
+                
+                <!-- Certificates -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-certificate doc-card-icon"></i>
+                        Certificates
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-certificates">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-certificates" class="doc-file-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-certificates"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-certificates">Upload</button>
+                </div>
+                
+                <!-- Degree Certificates -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-graduation-cap doc-card-icon"></i>
+                        Degree Certificates
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-degreeCerts">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-degreeCerts" class="doc-file-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-degreeCerts"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-degreeCerts">Upload</button>
+                </div>
+                
+                <!-- Professional Certificates -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-award doc-card-icon"></i>
+                        Professional Certificates
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-professionalCerts">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-professionalCerts" class="doc-file-input" accept=".pdf,image/*">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-professionalCerts"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-professionalCerts">Upload</button>
+                </div>
+                
+                <!-- CV / Resume -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-file-alt doc-card-icon"></i>
+                        CV / Resume
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-cv">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-cv" class="doc-file-input" accept=".pdf,.doc,.docx">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-cv"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-cv">Upload</button>
+                </div>
+                
+                <!-- Other Documents -->
+                <div class="document-upload-card">
+                    <div class="doc-card-title">
+                        <i class="fas fa-folder doc-card-icon"></i>
+                        Other Documents
+                    </div>
+                    <div class="doc-upload-area" id="upload-area-otherDocs">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Click to upload</span>
+                        <input type="file" id="file-otherDocs" class="doc-file-input">
+                    </div>
+                    <div class="doc-file-name empty" id="file-name-otherDocs"></div>
+                    <button type="button" class="doc-upload-btn" id="upload-otherDocs">Upload</button>
+                </div>
+            </div>
         </div>
         
         <div class="form-navigation">
