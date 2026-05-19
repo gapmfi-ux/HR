@@ -186,38 +186,56 @@ const Employee = {
         }
     },
     
-    uploadDoc: async function(docType) {
-        const file = document.getElementById(`file-${docType}`).files[0];
-        if(!file) return Utils.showToast('Select a file', 'error');
-        
+   uploadDoc: async function() {
+    const file = document.getElementById('docFile').files[0];
+    if(!file) return Utils.showToast('Select a file', 'error');
+    
+    Utils.showLoading();
+    
+    try {
         const reader = new FileReader();
         reader.onload = async (e) => {
-            const docTypeLabels = {
-                'passportPhoto': 'Passport Photo',
-                'nationalId': 'National ID',
-                'certificates': 'Certificates',
-                'degreeCerts': 'Degree Certificate',
-                'professionalCerts': 'Professional Certificate',
-                'cv': 'CV/Resume',
-                'otherDocs': 'Other Documents'
-            };
-            
-            const result = await API.uploadDocument({
-                employeeNumber: this.employeeNumber,
-                documentType: docTypeLabels[docType],
-                fileName: file.name,
-                fileContent: e.target.result.split(',')[1],
-                mimeType: file.type
-            });
-            
-            if(result.success) {
-                this.uploadedDocuments[docType] = file.name;
-                Utils.showToast(`${docTypeLabels[docType]} uploaded successfully`, 'success');
-            } else {
-                Utils.showToast(`${docTypeLabels[docType]} upload failed`, 'error');
+            try {
+                // Extract base64 content (remove data:image/png;base64, prefix)
+                const base64Content = e.target.result.split(',')[1];
+                
+                const documentData = {
+                    employeeNumber: this.employeeNumber,
+                    documentType: document.getElementById('docType').value,
+                    fileName: file.name,
+                    fileContent: base64Content,
+                    mimeType: file.type
+                };
+                
+                Logger.log('Sending document upload request...');
+                const result = await API.uploadDocument(documentData);
+                
+                Utils.hideLoading();
+                
+                if(result.success) {
+                    Utils.showToast('Document uploaded successfully', 'success');
+                    document.getElementById('docFile').value = ''; // Clear file input
+                    // Refresh document list if you have one
+                } else {
+                    Utils.showToast('Document upload failed: ' + (result.error || 'Unknown error'), 'error');
+                }
+            } catch(error) {
+                Utils.hideLoading();
+                Utils.showToast('Error uploading document: ' + error.message, 'error');
+                console.error('Upload error:', error);
             }
         };
+        
+        reader.onerror = () => {
+            Utils.hideLoading();
+            Utils.showToast('Error reading file', 'error');
+        };
+        
         reader.readAsDataURL(file);
+    } catch(error) {
+        Utils.hideLoading();
+        Utils.showToast('Error: ' + error.message, 'error');
+        console.error(error);
     },
     
     submit: async function() {
