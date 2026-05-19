@@ -60,9 +60,17 @@ const Employee = {
     },
     
     generateNumber: async function() {
-        const last = await API.getLastEmployeeNumber();
-        this.employeeNumber = API.generateEmployeeNumber(last);
-        document.getElementById('employeeNumber').value = this.employeeNumber;
+        try {
+            const last = await API.getLastEmployeeNumber();
+            this.employeeNumber = API.generateEmployeeNumber(last);
+            const empNumInput = document.getElementById('employeeNumber');
+            if(empNumInput) {
+                empNumInput.value = this.employeeNumber;
+            }
+        } catch(e) {
+            console.error('Error generating employee number:', e);
+            this.employeeNumber = 'GAP0001';
+        }
     },
     
     loadData: async function(empNum) {
@@ -182,23 +190,28 @@ const Employee = {
             const file = fileInput.files[0];
             const size = (file.size / 1024).toFixed(2);
             display.textContent = `${file.name} (${size}KB)`;
-            display.classList.remove('empty');
-            display.classList.add('uploaded');
+            display.className = 'doc-file-name uploaded';
         }
     },
     
     uploadDoc: async function(docType) {
         const fileInput = document.getElementById(`file-${docType}`);
-        const file = fileInput.files[0];
-        
-        if(!file) {
-            Utils.showToast('Select a file first', 'error');
+        if(!fileInput.files[0]) {
+            Utils.showToast('Please select a file', 'error');
             return;
         }
         
-        // Validate file size (5MB)
-        if(file.size > 5 * 1024 * 1024) {
-            Utils.showToast('File size must be less than 5MB', 'error');
+        const file = fileInput.files[0];
+        
+        // Validate file size
+        if(file.size > CONFIG.MAX_FILE_SIZE) {
+            Utils.showToast('File size exceeds 5MB limit', 'error');
+            return;
+        }
+        
+        // Validate file type
+        if(!CONFIG.ALLOWED_FILE_TYPES.includes(file.type)) {
+            Utils.showToast('File type not allowed. Use: PDF, JPG, PNG, DOC, DOCX', 'error');
             return;
         }
         
@@ -224,7 +237,7 @@ const Employee = {
                     
                     const documentData = {
                         employeeNumber: this.employeeNumber,
-                        documentType: docTypeMap[docType] || docType,
+                        documentType: docTypeMap[docType],
                         fileName: file.name,
                         fileContent: base64Content,
                         mimeType: file.type
@@ -237,17 +250,19 @@ const Employee = {
                     
                     if(result.success) {
                         Utils.showToast('Document uploaded successfully', 'success');
-                        fileInput.value = ''; // Clear file input
-                        
-                        // Update display
-                        const display = document.getElementById(`file-name-${docType}`);
-                        if(display) {
-                            display.textContent = 'Uploaded ✓';
-                            display.classList.add('uploaded');
-                        }
                         
                         // Track uploaded document
-                        this.uploadedDocuments[docType] = result.data;
+                        if(!this.uploadedDocuments[docType]) {
+                            this.uploadedDocuments[docType] = [];
+                        }
+                        this.uploadedDocuments[docType].push({
+                            fileName: file.name,
+                            documentId: result.data.documentId
+                        });
+                        
+                        // Clear file input
+                        fileInput.value = '';
+                        document.getElementById(`file-name-${docType}`).className = 'doc-file-name empty';
                     } else {
                         Utils.showToast('Document upload failed: ' + (result.error || 'Unknown error'), 'error');
                     }
@@ -276,20 +291,20 @@ const Employee = {
         const data = {};
         const fields = [
             // Personal
-            'employeeName','sex','dob','idType','idNumber','placeOfBirth','nationality',
+            'employeeNumber', 'employeeName', 'sex', 'dob', 'idType', 'idNumber', 'placeOfBirth', 'nationality',
             // Contact
-            'contactNumber','emailAddress','postalAddress','residence','digitalAddress','landmark','residenceType',
+            'contactNumber', 'emailAddress', 'postalAddress', 'residence', 'digitalAddress', 'landmark', 'residenceType',
             // Family
-            'maritalStatus','spouseName','spouseContact','childrenCount','fatherName','fatherContact',
-            'motherName','motherContact','nextOfKinName','kinRelationship','kinContact','kinResidence',
+            'maritalStatus', 'spouseName', 'spouseContact', 'childrenCount', 'fatherName', 'fatherContact',
+            'motherName', 'motherContact', 'nextOfKinName', 'kinRelationship', 'kinContact', 'kinResidence',
             // Employment
-            'dateOfAppointment','assumptionDate','designation','department','employmentType','ssnit','tinNumber',
+            'dateOfAppointment', 'assumptionDate', 'designation', 'department', 'employmentType', 'ssnit', 'tinNumber',
             // Education
-            'secondaryInstitution','secondaryMajor','secondaryYear','tertiaryInstitution','tertiaryMajor',
-            'tertiaryYear','professionalInstitution','professionalMajor','professionalYear',
+            'secondaryInstitution', 'secondaryMajor', 'secondaryYear', 'tertiaryInstitution', 'tertiaryMajor',
+            'tertiaryYear', 'professionalInstitution', 'professionalMajor', 'professionalYear',
             // Guarantor
-            'guarantor1Name','guarantor1Contact','guarantor1Email','guarantor1Address',
-            'guarantor2Name','guarantor2Contact','guarantor2Email','guarantor2Address'
+            'guarantor1Name', 'guarantor1Contact', 'guarantor1Email', 'guarantor1Address',
+            'guarantor2Name', 'guarantor2Contact', 'guarantor2Email', 'guarantor2Address'
         ];
         
         fields.forEach(f => { 
