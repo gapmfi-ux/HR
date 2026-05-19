@@ -1,4 +1,3 @@
-
 const API = {
     // Store the base URL from config
     baseUrl: CONFIG.API_URL,
@@ -122,46 +121,45 @@ const API = {
     },
     
     // ==================== DOCUMENTS API ====================
-    // Note: File uploads require POST due to binary data
+    // Note: File uploads use POST to handle binary data
     
-      async uploadDocument(documentData) {
-    try {
-      Logger.log('Uploading document...');
-      Logger.log('Document data:', documentData);
-      
-      const response = await fetch(this.baseURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          action: 'uploadDocument',
-          data: documentData
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const result = await response.json();
-      Logger.log('Upload result:', result);
-      return result;
-    } catch (error) {
-      Logger.log(`Document upload error: ${error.message}`);
-      console.error('Document upload error:', error);
-      throw error;
-    }
-  },
-  
-  async getEmployeeDocuments(employeeNumber) {
-    const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
-    return result.documents || [];
-  },
-  
-  async deleteDocument(documentId) {
-    return this.jsonpRequest('deleteDocument', { documentId });
-  },
+    async uploadDocument(documentData) {
+        try {
+            console.log('Uploading document via POST...');
+            console.log('Document data keys:', Object.keys(documentData));
+            
+            const response = await fetch(this.baseUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'uploadDocument',
+                    data: documentData
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('Upload result:', result);
+            return result;
+        } catch (error) {
+            console.error(`Document upload error: ${error.message}`);
+            throw error;
+        }
+    },
+    
+    async getEmployeeDocuments(employeeNumber) {
+        const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
+        return result.documents || [];
+    },
+    
+    async deleteDocument(documentId) {
+        return this.jsonpRequest('deleteDocument', { documentId });
+    },
     
     // ==================== PAYROLL API ====================
     
