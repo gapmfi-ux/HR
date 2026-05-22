@@ -57,7 +57,8 @@ const API = {
     },
     
     /**
-     * Upload document using POST with FormData (handles large files, no CORS issues)
+     * Upload document using POST with FormData
+     * Simple and direct - no iframes, no no-cors
      */
     uploadDocumentToDrive: async function(formData) {
         console.log('Uploading document via POST...');
@@ -76,89 +77,22 @@ const API = {
             fileType: file.type
         });
         
-        try {
-            // Create a new FormData and add action
-            const uploadFormData = new FormData();
-            uploadFormData.append('action', 'uploadDocument');
-            uploadFormData.append('employeeNumber', employeeNumber);
-            uploadFormData.append('documentType', documentType);
-            uploadFormData.append('fileName', fileName);
-            uploadFormData.append('mimeType', file.type);
-            uploadFormData.append('file', file);
-            
-            // Send as POST request
-            const response = await fetch(this.baseUrl, {
-                method: 'POST',
-                mode: 'no-cors', // Use no-cors mode to avoid preflight
-                body: uploadFormData
-            });
-            
-            // With no-cors, we can't read the response properly
-            // So we need to use a different approach
-            
-            // Alternative: Use a hidden iframe for form submission
-            return new Promise((resolve, reject) => {
-                const iframeId = `upload_iframe_${Date.now()}`;
-                const iframe = document.createElement('iframe');
-                iframe.id = iframeId;
-                iframe.name = iframeId;
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                
-                // Create a form that targets the iframe
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = this.baseUrl;
-                form.target = iframeId;
-                form.enctype = 'multipart/form-data';
-                
-                // Add all form data
-                for (let pair of uploadFormData.entries()) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = pair[0];
-                    if (pair[1] instanceof File) {
-                        // For files, we need to use the original form data
-                        // This is a limitation - let's try a different approach
-                        console.log('File detected, using different method');
-                    }
-                    input.value = typeof pair[1] === 'string' ? pair[1] : '';
-                    form.appendChild(input);
-                }
-                
-                // For file uploads, we need to submit directly
-                document.body.appendChild(form);
-                
-                iframe.onload = () => {
-                    // Try to get response
-                    try {
-                        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                        const responseText = iframeDoc.body.innerText || iframeDoc.body.textContent;
-                        if (responseText) {
-                            const result = JSON.parse(responseText);
-                            resolve(result);
-                        } else {
-                            resolve({ success: true, message: 'Upload initiated' });
-                        }
-                    } catch (error) {
-                        // Cross-origin error, but upload might still work
-                        console.log('Upload completed (cross-origin response)');
-                        resolve({ success: true, message: 'Upload completed' });
-                    } finally {
-                        setTimeout(() => {
-                            document.body.removeChild(iframe);
-                            document.body.removeChild(form);
-                        }, 1000);
-                    }
-                };
-                
-                form.submit();
-            });
-            
-        } catch (error) {
-            console.error('Upload error:', error);
-            throw new Error('Failed to upload document: ' + error.message);
+        // Add action to formData
+        formData.append('action', 'uploadDocument');
+        
+        // Send as POST request with proper CORS
+        const response = await fetch(this.baseUrl, {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const result = await response.json();
+        console.log('Upload result:', result);
+        return result;
     },
     
     // ==================== EMPLOYEE API ====================
