@@ -234,86 +234,87 @@ const Employee = {
         }
     },
     
-    uploadDoc: async function(docType) {
-        const fileInput = document.getElementById(`file-${docType}`);
-        if(!fileInput.files || !fileInput.files[0]) {
-            Utils.showToast('Please select a file', 'error');
-            return;
-        }
+   uploadDoc: async function(docType) {
+    const fileInput = document.getElementById(`file-${docType}`);
+    if(!fileInput.files || !fileInput.files[0]) {
+        Utils.showToast('Please select a file', 'error');
+        return;
+    }
+    
+    const file = fileInput.files[0];
+    
+    if(file.size > CONFIG.MAX_FILE_SIZE) {
+        Utils.showToast('File size exceeds 5MB limit', 'error');
+        return;
+    }
+    
+    if(!CONFIG.ALLOWED_FILE_TYPES.includes(file.type)) {
+        Utils.showToast('File type not allowed. Use: PDF, JPG, PNG, DOC, DOCX', 'error');
+        return;
+    }
+    
+    Utils.showLoading();
+    
+    try {
+        // Ensure folder exists
+        await this.ensureEmployeeFolder();
         
-        const file = fileInput.files[0];
+        const docTypeMap = {
+            'passportPhoto': 'Passport Photo',
+            'nationalId': 'National ID',
+            'certificates': 'Certificates',
+            'degreeCerts': 'Degree Certificates',
+            'professionalCerts': 'Professional Certificates',
+            'cv': 'CV / Resume',
+            'otherDocs': 'Other Documents'
+        };
         
-        if(file.size > CONFIG.MAX_FILE_SIZE) {
-            Utils.showToast('File size exceeds 5MB limit', 'error');
-            return;
-        }
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('employeeNumber', this.employeeNumber);
+        formData.append('documentType', docTypeMap[docType]);
+        formData.append('fileName', file.name);
         
-        if(!CONFIG.ALLOWED_FILE_TYPES.includes(file.type)) {
-            Utils.showToast('File type not allowed. Use: PDF, JPG, PNG, DOC, DOCX', 'error');
-            return;
-        }
+        console.log('Uploading document:', {
+            fileName: file.name,
+            employeeNumber: this.employeeNumber,
+            documentType: docTypeMap[docType],
+            fileSize: file.size
+        });
         
-        Utils.showLoading();
+        const result = await API.uploadDocumentToDrive(formData);
         
-        try {
-            await this.ensureEmployeeFolder();
+        Utils.hideLoading();
+        
+        if(result && result.success) {
+            Utils.showToast('Document uploaded successfully', 'success');
             
-            const docTypeMap = {
-                'passportPhoto': 'Passport Photo',
-                'nationalId': 'National ID',
-                'certificates': 'Certificates',
-                'degreeCerts': 'Degree Certificates',
-                'professionalCerts': 'Professional Certificates',
-                'cv': 'CV / Resume',
-                'otherDocs': 'Other Documents'
-            };
-            
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('employeeNumber', this.employeeNumber);
-            formData.append('documentType', docTypeMap[docType]);
-            formData.append('fileName', file.name);
-            formData.append('mimeType', file.type);
-            
-            console.log('Uploading document:', {
+            // Track in memory
+            if(!this.uploadedDocuments[docType]) {
+                this.uploadedDocuments[docType] = [];
+            }
+            this.uploadedDocuments[docType].push({
                 fileName: file.name,
-                employeeNumber: this.employeeNumber,
-                documentType: docTypeMap[docType],
-                fileSize: file.size
+                fileUrl: result.fileUrl,
+                documentType: docTypeMap[docType]
             });
             
-            const result = await API.uploadDocumentToDrive(formData);
-            
-            Utils.hideLoading();
-            
-            if(result && result.success) {
-                Utils.showToast('Document uploaded successfully', 'success');
-                
-                if(!this.uploadedDocuments[docType]) {
-                    this.uploadedDocuments[docType] = [];
-                }
-                this.uploadedDocuments[docType].push({
-                    fileName: file.name,
-                    documentId: result.data?.documentId,
-                    fileUrl: result.data?.fileUrl,
-                    documentType: docTypeMap[docType]
-                });
-                
-                fileInput.value = '';
-                const display = document.getElementById(`file-name-${docType}`);
-                if(display) {
-                    display.className = 'doc-file-name empty';
-                    display.textContent = 'No file chosen';
-                }
-            } else {
-                Utils.showToast('Document upload failed: ' + ((result && result.error) || 'Unknown error'), 'error');
+            // Clear file input
+            fileInput.value = '';
+            const display = document.getElementById(`file-name-${docType}`);
+            if(display) {
+                display.className = 'doc-file-name empty';
+                display.textContent = 'No file chosen';
             }
-        } catch(error) {
-            Utils.hideLoading();
-            Utils.showToast('Error uploading document: ' + error.message, 'error');
-            console.error('Upload error:', error);
+        } else {
+            Utils.showToast('Document upload failed: ' + ((result && result.error) || 'Unknown error'), 'error');
         }
-    },
+    } catch(error) {
+        Utils.hideLoading();
+        Utils.showToast('Error uploading document: ' + error.message, 'error');
+        console.error('Upload error:', error);
+    }
+},
     
     submit: async function() {
         const data = {};
