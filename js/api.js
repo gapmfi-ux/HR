@@ -57,97 +57,67 @@ const API = {
     },
     
     /**
-     * Upload document using iframe method (avoids CORS completely)
+     * Upload document using base64 and JSONP (NO iframes, NO CORS issues)
      */
-    uploadDocumentToDrive: function(formData) {
+    uploadDocumentToDrive: async function(formData) {
+        // Extract data from FormData
+        const file = formData.get('file');
+        const employeeNumber = formData.get('employeeNumber');
+        const documentType = formData.get('documentType');
+        const fileName = formData.get('fileName');
+        const mimeType = formData.get('mimeType');
+        
+        console.log('Preparing to upload via JSONP:', {
+            employeeNumber,
+            documentType,
+            fileName,
+            fileSize: file.size,
+            mimeType
+        });
+        
+        // Validate file size (max 5MB for JSONP)
+        if (file.size > 5 * 1024 * 1024) {
+            throw new Error('File size exceeds 5MB limit for upload');
+        }
+        
+        // Convert file to base64
         return new Promise((resolve, reject) => {
-            console.log('Uploading document to Drive using iframe method...');
+            const reader = new FileReader();
             
-            const iframeId = `upload_iframe_${Date.now()}_${Math.random()}`;
-            const iframe = document.createElement('iframe');
-            iframe.id = iframeId;
-            iframe.name = iframeId;
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
-            
-            // Create form that targets the iframe
-            const uploadForm = document.createElement('form');
-            uploadForm.method = 'POST';
-            uploadForm.action = this.baseUrl;
-            uploadForm.target = iframeId;
-            uploadForm.enctype = 'multipart/form-data';
-            
-            // Add action parameter
-            const actionInput = document.createElement('input');
-            actionInput.type = 'hidden';
-            actionInput.name = 'action';
-            actionInput.value = 'uploadDocument';
-            uploadForm.appendChild(actionInput);
-            
-            // Add all form data entries
-            for (let pair of formData.entries()) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = pair[0];
-                input.value = pair[1];
-                uploadForm.appendChild(input);
-            }
-            
-            // Handle iframe load (response)
-            iframe.onload = () => {
+            reader.onload = async (e) => {
                 try {
-                    // Get response from iframe
-                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                    let responseText = '';
-                    
-                    // Try to get response text
-                    if (iframeDoc.body) {
-                        responseText = iframeDoc.body.innerText || iframeDoc.body.textContent || '';
+                    // Get base64 content (remove the data:xxx;base64, prefix)
+                    let base64Content = e.target.result;
+                    const commaIndex = base64Content.indexOf(',');
+                    if (commaIndex !== -1) {
+                        base64Content = base64Content.substring(commaIndex + 1);
                     }
                     
-                    console.log('Response from server:', responseText);
+                    console.log('File converted to base64, length:', base64Content.length);
                     
-                    if (responseText) {
-                        // Try to parse as JSON
-                        const result = JSON.parse(responseText);
-                        if (result.success) {
-                            resolve(result);
-                        } else {
-                            reject(new Error(result.error || 'Upload failed'));
-                        }
-                    } else {
-                        reject(new Error('Empty response from server'));
-                    }
+                    // Upload via JSONP
+                    const result = await this.jsonpRequest('uploadDocument', {
+                        employeeNumber: employeeNumber,
+                        documentType: documentType,
+                        fileName: fileName,
+                        mimeType: mimeType,
+                        fileContent: base64Content
+                    }, 60000); // 60 second timeout
+                    
+                    console.log('Upload result:', result);
+                    resolve(result);
+                    
                 } catch (error) {
-                    console.error('Error parsing response:', error);
-                    reject(new Error('Failed to parse server response: ' + error.message));
-                } finally {
-                    // Clean up iframe
-                    setTimeout(() => {
-                        if (document.body.contains(iframe)) {
-                            document.body.removeChild(iframe);
-                        }
-                    }, 1000);
+                    console.error('Upload error:', error);
+                    reject(error);
                 }
             };
             
-            iframe.onerror = () => {
-                reject(new Error('Iframe failed to load'));
-                if (document.body.contains(iframe)) {
-                    document.body.removeChild(iframe);
-                }
+            reader.onerror = () => {
+                reject(new Error('Failed to read file'));
             };
             
-            // Submit the form
-            document.body.appendChild(uploadForm);
-            uploadForm.submit();
-            
-            // Remove form after submission
-            setTimeout(() => {
-                if (uploadForm.parentNode) {
-                    document.body.removeChild(uploadForm);
-                }
-            }, 100);
+            reader.readAsDataURL(file);
         });
     },
     
