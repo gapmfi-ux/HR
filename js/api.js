@@ -1,3 +1,4 @@
+// api.js
 const API = {
     // Store the base URL from config
     baseUrl: CONFIG.API_URL,
@@ -128,6 +129,37 @@ const API = {
     
     async ensureEmployeeFolder(employeeNumber) {
         return this.jsonpRequest('ensureEmployeeFolder', { employeeNumber });
+    },
+
+    /**
+     * JSONP upload (base64) - used by employee-documents.js (FileReader -> base64)
+     * Expects: { employeeNumber, documentType, fileName, fileContent, mimeType }
+     * Returns the backend response object (with success flag, error, fileUrl, etc.)
+     */
+    async uploadDocument(data) {
+        return this.jsonpRequest('uploadDocument', data);
+    },
+
+    /**
+     * Get documents for an employee.
+     * Returns an array of documents (for convenience it returns an array).
+     * Backend may return { data: [...] } or { documents: [...] } or directly an array.
+     */
+    async getEmployeeDocuments(employeeNumber) {
+        const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
+        // Normalize possible shapes
+        if (Array.isArray(result)) return result;
+        if (result === null || result === undefined) return [];
+        // If the backend returned wrapper objects
+        return result.data || result.documents || result.documentsList || result || [];
+    },
+
+    /**
+     * Delete a document by fileId (or any id parameter backend expects).
+     * Returns backend response object.
+     */
+    async deleteDocument(fileId) {
+        return this.jsonpRequest('deleteDocument', { fileId });
     },
     
     // ==================== PAYROLL API ====================
