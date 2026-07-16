@@ -14,17 +14,32 @@ const API = {
      */
     jsonpRequest: function(action, data = {}, timeout = 30000) {
         return new Promise((resolve, reject) => {
+            // Generate a unique callback name
             const callbackName = `jsonp_callback_${++this.callbackCounter}_${Date.now()}`;
+            const scriptId = `script_${callbackName}`;
+            
+            // Setup timeout
             const timeoutId = setTimeout(() => {
-                delete this.callbacks[callbackName];
-                delete window[callbackName];
+                // Cleanup
+                if (this.callbacks[callbackName]) {
+                    delete this.callbacks[callbackName];
+                }
+                if (window[callbackName]) {
+                    try { delete window[callbackName]; } catch(e) {}
+                }
+                const existingScript = document.getElementById(scriptId);
+                if (existingScript) existingScript.remove();
                 reject(new Error(`Request timeout for action: ${action}`));
             }, timeout);
             
+            // Register callback handler
             this.callbacks[callbackName] = (result) => {
                 clearTimeout(timeoutId);
+                // Cleanup references
                 delete this.callbacks[callbackName];
-                delete window[callbackName];
+                try { delete window[callbackName]; } catch(e) {}
+                const scriptEl = document.getElementById(scriptId);
+                if (scriptEl) scriptEl.remove();
                 
                 if (result && result.success === false) {
                     reject(new Error(result.error || 'Request failed'));
@@ -33,24 +48,30 @@ const API = {
                 }
             };
             
+            // Expose the global callback that the JSONP endpoint will call
             window[callbackName] = (response) => {
                 if (this.callbacks[callbackName]) {
                     this.callbacks[callbackName](response);
                 }
             };
             
-            let url = `${this.baseUrl}?callback=${callbackName}&action=${action}`;
-            
+            // Build URL
+            let url = `${this.baseUrl}?callback=${callbackName}&action=${encodeURIComponent(action)}`;
             if (data && Object.keys(data).length > 0) {
                 url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
             }
             
+            // Insert script tag to perform JSONP
             const script = document.createElement('script');
             script.src = url;
+            script.id = scriptId;
+            script.async = true;
             script.onerror = () => {
                 clearTimeout(timeoutId);
-                delete this.callbacks[callbackName];
-                delete window[callbackName];
+                if (this.callbacks[callbackName]) delete this.callbacks[callbackName];
+                try { delete window[callbackName]; } catch(e) {}
+                const existingScript = document.getElementById(scriptId);
+                if (existingScript) existingScript.remove();
                 reject(new Error(`Network error for action: ${action}`));
             };
             document.head.appendChild(script);
@@ -64,7 +85,7 @@ const API = {
     uploadDocumentToDrive: async function(formData) {
         console.log('Uploading document via POST...');
         
-        // Get file info for logging
+        // Get file info for logging (may be undefined if FormData is empty)
         const file = formData.get('file');
         const employeeNumber = formData.get('employeeNumber');
         const documentType = formData.get('documentType');
@@ -74,26 +95,38 @@ const API = {
             employeeNumber,
             documentType,
             fileName,
-            fileSize: file.size,
-            fileType: file.type
+            fileSize: file ? file.size : undefined,
+            fileType: file ? file.type : undefined
         });
         
-        // Add action to formData
+        // Add action to formData so the backend picks it up
         formData.append('action', 'uploadDocument');
         
-        // Send as POST request with proper CORS
-        const response = await fetch(this.baseUrl, {
-            method: 'POST',
-            body: formData
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const response = await fetch(this.baseUrl, {
+                method: 'POST',
+                body: formData,
+                // Do NOT set Content-Type; browser will set multipart/form-data boundary automatically
+                credentials: 'omit' // adjust if you need cookies; Apps Script web apps typically don't use cookies
+            });
+            
+            // Network-level failures will throw before here; check HTTP status
+            if (!response.ok) {
+                // Try to parse any body for debugging
+                let text = '';
+                try { text = await response.text(); } catch(e) {}
+                throw new Error(`HTTP error! status: ${response.status} ${response.statusText} ${text ? '- ' + text : ''}`);
+            }
+            
+            // Try parse JSON
+            const result = await response.json();
+            console.log('Upload result:', result);
+            return result;
+        } catch (err) {
+            console.error('uploadDocumentToDrive error:', err);
+            // Normalize error object so callers can handle it uniformly
+            return { success: false, error: err.message || String(err) };
         }
-        
-        const result = await response.json();
-        console.log('Upload result:', result);
-        return result;
     },
     
     // ==================== EMPLOYEE API ====================
@@ -104,7 +137,7 @@ const API = {
     
     async getEmployeeList() {
         const result = await this.jsonpRequest('getEmployeeList');
-        return result.data || [];
+        return (result && result.data) ? result.data : [];
     },
     
     async getEmployeeById(employeeNumber) {
@@ -122,7 +155,7 @@ const API = {
     
     async getLastEmployeeNumber() {
         const result = await this.jsonpRequest('getLastEmployeeNumber');
-        return result.data;
+        return result && result.data;
     },
     
     // ==================== DOCUMENTS API ====================
@@ -148,18 +181,21 @@ const API = {
     async getEmployeeDocuments(employeeNumber) {
         const result = await this.jsonpRequest('getEmployeeDocuments', { employeeNumber });
         // Normalize possible shapes
+        if (!result) return [];
         if (Array.isArray(result)) return result;
-        if (result === null || result === undefined) return [];
-        // If the backend returned wrapper objects
-        return result.data || result.documents || result.documentsList || result || [];
+        if (Array.isArray(result.data)) return result.data;
+        if (Array.isArray(result.documents)) return result.documents;
+        if (Array.isArray(result.documentsList)) return result.documentsList;
+        // fallback: maybe backend returned wrapper with documents property or single document
+        return result.documents || result.data || [];
     },
 
     /**
-     * Delete a document by fileId (or any id parameter backend expects).
+     * Delete a document by id. Backend expects parameter `documentId`.
      * Returns backend response object.
      */
-    async deleteDocument(fileId) {
-        return this.jsonpRequest('deleteDocument', { fileId });
+    async deleteDocument(documentId) {
+        return this.jsonpRequest('deleteDocument', { documentId });
     },
     
     // ==================== PAYROLL API ====================
@@ -237,7 +273,7 @@ const API = {
     async testConnection() {
         try {
             const result = await this.jsonpRequest('test', {}, 5000);
-            return result.success === true;
+            return result && result.success === true;
         } catch {
             return false;
         }
